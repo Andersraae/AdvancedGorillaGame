@@ -1,9 +1,15 @@
 package ADVANCEDGORILLA;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+
 
 public class GameController {
     private static final int CANVAS_X = 600;
@@ -11,19 +17,90 @@ public class GameController {
     private static Player player2 = new Player(CANVAS_X - 1, 0, "p2");
     private static Projectile proj = new Projectile(0,0);
     private static final double g = 9.81;
-    private static final int STEPS = 20;
+    private static final int totalSteps = 20;
     private boolean hasTurnP1 = true;
 
     public Label player1point;
     public Label player2point;
+    public Scene root;
     @FXML
     private Circle projectile;
+
+    //Manuel kast
     @FXML
     private TextField angle;
     @FXML
     private TextField velocity;
 
+    //Visuel kast
+    public Polygon indicator;
+    public Label visualangle;
+    public Label visualvelocity;
+    public double xdiff;
+    public double ydiff;
+    public double throwvelocity;
+    public double throwangledeg;
+    public double displayangle;
+
     //Anders
+    //Til visuelt kast
+    @FXML
+    private void onMouseMove(MouseEvent event){
+        xdiff = event.getX() - projectile.getLayoutX();
+        ydiff = projectile.getLayoutY() - event.getY();
+        throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
+        throwangledeg = Math.toDegrees(Math.acos(xdiff/throwvelocity));
+        displayangle = throwangledeg;
+
+        if (ydiff < 0){ //Hvis man peger musen under bananens position på y aksen
+            displayangle = - throwangledeg;
+        }
+
+        if (!hasTurnP1){
+            displayangle = 180 - throwangledeg;
+        }
+
+        throwvelocity /= 4; //Gør det nemmere at styre hastigheden
+        
+        visualangle.setText("Vinkel: " + round(displayangle));
+        visualvelocity.setText("Hastighed: " + round(throwvelocity));
+
+        indicator.getPoints().setAll(
+          0.0,0.0,
+          xdiff / 4 - 8 , - ydiff / 4 - 8,
+          xdiff / 4 + 8 , - ydiff / 4 + 8
+        );
+
+    }
+
+    //Anders
+    //Til visuelt kast
+    @FXML
+    private void onMouseClick(MouseEvent event){
+        //Print til test
+        System.out.println("click");
+
+        System.out.println(event.getX());
+        System.out.println(event.getY());
+
+        System.out.println(projectile.getLayoutX());
+        System.out.println(projectile.getLayoutY());
+
+        //Kode
+        if(hasTurnP1){ //player 1 har tur
+            simulateProjectile(player1, player2, throwangledeg, throwvelocity);
+        } else { //player 2 har tur
+            simulateProjectile(player2, player1, throwangledeg, -throwvelocity);
+        }
+        indicator.setLayoutX(projectile.getLayoutX());
+        indicator.setLayoutY(projectile.getLayoutY());
+
+        System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
+
+    }
+
+    //Anders
+    //Til kast knappen
     public void kast(){
         try {
             double numangle = Double.parseDouble(angle.getText());
@@ -51,7 +128,7 @@ public class GameController {
         double xVelocity = VELOCITY * Math.cos(angle);
         double yVelocity = VELOCITY * Math.sin(angle);
         double totalTime = - 2.0 * yVelocity / -g;
-        double timeIncrement = totalTime / STEPS;
+        double timeIncrement = totalTime / totalSteps;
         double xIncrement = xVelocity * timeIncrement;
         double x = shootingPlayer.getX();
         double y = shootingPlayer.getY();
@@ -61,13 +138,13 @@ public class GameController {
         System.out.println("step\tx \t y \t time \t length");
         System.out.println("0\t0.0\t\t0.0\t\t0.0");
 
-        for (stepCounter= 1; stepCounter <= STEPS; stepCounter++) {
+        for (stepCounter= 1; stepCounter <= totalSteps; stepCounter++) {
             t += timeIncrement;
             x += xIncrement;
             y = yVelocity * t + 0.5 * -g * t * t;
             proj.setX(x);
             proj.setY(y);
-            projectile.setCenterX(x);
+            projectile.setLayoutX(x);
             projectile.setCenterY(y);
 
             double l = targetPlayer.distanceToProjectile(proj);
