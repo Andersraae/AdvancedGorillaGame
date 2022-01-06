@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<!-- Anders og Christian -->
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" scaleShape="false" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ADVANCEDGORILLA.GameController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" layoutY="312.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" layoutX="545.0" layoutY="312.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
+      <Button layoutX="415.0" layoutY="30.0" mnemonicParsing="false" onAction="#kast" text="Kast" />
+      <TextField fx:id="angle" layoutX="226.0" layoutY="13.0" />
+      <TextField fx:id="velocity" layoutX="226.0" layoutY="42.0" />
+      <Circle fx:id="projectile" fill="YELLOW" layoutY="356" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
+      <Label layoutX="159.0" layoutY="17.0" text="Vinkel" />
+      <Label layoutX="159.0" layoutY="46.0" text="Hastighed" />
+      <Label text="Spiller 1" />
+      <Label alignment="TOP_RIGHT" contentDisplay="RIGHT" layoutX="557.0" text="Spiller 2" />
+      <Label fx:id="player1point" text="0" contentDisplay="RIGHT" layoutY="22.0" />
+      <Label fx:id="player2point" text="0" layoutX="572.0" layoutY="22.0" />
+   </children>
+</AnchorPane>
