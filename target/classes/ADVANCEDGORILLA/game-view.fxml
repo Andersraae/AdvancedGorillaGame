@@ -21,6 +21,7 @@
       <Label layoutX="159.0" layoutY="46.0" text="Hastighed" />
       <!-- Indskriv manuelt værdier for kast -->
 
+
       <!-- Visuelt kast -->
       <Polygon fx:id="indicator" fill="#f5a900" layoutY="356" stroke="BLACK" strokeType="INSIDE" />
       <!-- Visuelt kast -->
