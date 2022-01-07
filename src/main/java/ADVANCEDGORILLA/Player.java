@@ -1,5 +1,7 @@
 package ADVANCEDGORILLA;
 
+import javafx.beans.value.ObservableValue;
+
 public class Player extends Entity{
     protected String name;
     protected int point;

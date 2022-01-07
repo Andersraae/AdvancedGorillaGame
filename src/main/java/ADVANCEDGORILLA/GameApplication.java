@@ -1,12 +1,8 @@
 package ADVANCEDGORILLA;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -14,24 +10,8 @@ import java.io.IOException;
 
 public class GameApplication extends Application{
 
-    public static int PlayingTo;
-    public static String namePlayer1;
-    public static String namePlayer2;
-    public static double gravity;
-    private static Stage currentStage;
-    private static boolean firstStage = true;
-
-    public Label labelPlayer1;
-    public Label labelPlayer2;
-
-    @FXML
-    private TextField TextPlayingTo;
-    @FXML
-    private TextField TextNamePlayer1;
-    @FXML
-    private TextField TextNamePlayer2;
-    @FXML
-    private TextField TextGravity;
+    private static Stage currentStage; // den nuværende stage
+    private static boolean firstStage = true; //er kun imens det første vindue er åbent
 
     public static void main(String[] args) {
         launch();
@@ -39,22 +19,12 @@ public class GameApplication extends Application{
 
     @Override
     public void start(Stage stage) throws IOException {
-        setStage("start-screen.fxml");
+        setStage("start-screen.fxml"); //sætter scenen til startscenen
     }
 
-    public void startGame(){
-        try{
-            StartController.setValues();
-
-            if (PlayingTo > 0 && gravity != 0){
-                setStage("game-view.fxml");
-            }
-
-        } catch (Exception e){
-            System.out.println(e);
-        }
-    }
-
+    //Andreas
+    //Kaldes når der skal skiftes scene
+    //Sætter scenen til den fxml fil der har parameteren som filnavn
     public static void setStage(String resource) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameApplication.class.getResource(resource));
         Stage stage = new Stage();
@@ -63,12 +33,18 @@ public class GameApplication extends Application{
         stage.setResizable(false);
         stage.show();
 
+        closeStageIfNotFirst();
+        currentStage = stage;
+    }
+
+    //Andreas
+    //Sørger for at scenen lukker, når den næste åbner
+    public static void closeStageIfNotFirst(){
         if (firstStage == true){
             firstStage = false;
         } else {
             currentStage.close();
         }
-        currentStage = stage;
     }
 
 
