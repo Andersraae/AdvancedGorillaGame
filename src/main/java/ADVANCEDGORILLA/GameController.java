@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 
+
 public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
@@ -126,8 +127,6 @@ public class GameController implements Initializable {
     //Anders
     //Til kast knappen
     public void kast(){
-        namePlayer1.setText(player1.getName());
-        namePlayer2.setText(player2.getName());
         try {
             double numangle = Double.parseDouble(angle.getText());
             double numvelocity = Double.parseDouble(velocity.getText());

@@ -6,6 +6,7 @@ public class Player extends Entity{
     protected String name;
     protected int point;
 
+
     public Player(int x, int y, String name){
         super(x,y);
         this.name = name;

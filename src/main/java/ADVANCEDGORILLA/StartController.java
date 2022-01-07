@@ -11,6 +11,7 @@ public class StartController{
     @FXML
     private TextField TextNamePlayer1,TextNamePlayer2,TextPlayingTo,TextGravity;
 
+
     public void startGame(){
         try{
             setValues();

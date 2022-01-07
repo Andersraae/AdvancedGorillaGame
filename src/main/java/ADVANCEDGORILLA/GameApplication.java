@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 
+
 public class GameApplication extends Application{
 
     private static Stage currentStage; // den nuværende stage
