@@ -20,7 +20,6 @@ public class GameController {
 
     public Label player1point;
     public Label player2point;
-    public Scene root;
     @FXML
     private Circle projectile;
 

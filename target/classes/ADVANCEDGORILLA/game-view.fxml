@@ -14,7 +14,7 @@
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" layoutY="312.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
 
       <!-- Indskriv manuelt værdier for kast -->
-      <Button layoutX="415.0" layoutY="30.0" mnemonicParsing="false" onAction="#kast" text="Kast" />
+      <Button fx:id="buttonKast" layoutX="415.0" layoutY="30.0" mnemonicParsing="false" onAction="#kast" text="Kast" />
       <TextField fx:id="angle" layoutX="226.0" layoutY="13.0" />
       <TextField fx:id="velocity" layoutX="226.0" layoutY="42.0" />
       <Label layoutX="159.0" layoutY="17.0" text="Vinkel" />
@@ -30,8 +30,8 @@
       <!-- Projektil -->
 
       <!-- Spiller/Point -->
-      <Label text="Spiller 1" />
-      <Label alignment="TOP_RIGHT" contentDisplay="RIGHT" layoutX="557.0" text="Spiller 2" />
+      <Label fx:id="namePlayer1" text="Spiller 1" />
+      <Label fx:id="namePlayer2" alignment="TOP_RIGHT" contentDisplay="RIGHT" layoutX="557.0" text="Spiller 2" />
       <Label fx:id="player1point" contentDisplay="RIGHT" layoutY="22.0" text="0" />
       <Label fx:id="player2point" layoutX="572.0" layoutY="22.0" text="0" />
       <!-- Spiller/Point -->
