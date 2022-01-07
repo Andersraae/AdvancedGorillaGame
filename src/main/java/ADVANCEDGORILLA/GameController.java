@@ -9,6 +9,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
+import java.net.URL;
+import java.util.Random;
+import java.util.ResourceBundle;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -54,6 +58,7 @@ public class GameController implements Initializable {
         reset();
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
+        changeWind();
     }
 
     public static void reset(){
@@ -65,6 +70,15 @@ public class GameController implements Initializable {
         player1 = new Player(0, 0, StartController.namePlayer1);
         player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
         g = StartController.gravity;
+    }
+
+    //Vind
+    public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
+
+    private void changeWind(){
+        Random randi = new Random();
+        winddirection = randi.nextDouble(360);
+        windforce = randi.nextInt(5);
     }
 
     //Anders
@@ -92,8 +106,8 @@ public class GameController implements Initializable {
 
         indicator.getPoints().setAll(
           0.0,0.0,
-          xdiff / 4 - 8 , - ydiff / 4 - 8,
-          xdiff / 4 + 8 , - ydiff / 4 + 8
+          xdiff / 4 - 0.1 * xdiff , - ydiff / 4 - 0.1 * ydiff,
+          xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
         );
 
     }
@@ -101,16 +115,7 @@ public class GameController implements Initializable {
     //Anders
     //Til visuelt kast
     @FXML
-    private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
-        //Print til test
-        System.out.println("click");
-
-        System.out.println(event.getX());
-        System.out.println(event.getY());
-
-        System.out.println(projectile.getLayoutX());
-        System.out.println(projectile.getLayoutY());
-
+    private void onMouseClick(MouseEvent event){
         //Kode
         if(hasTurnP1){ //player 1 har tur
             simulateProjectile(player1, player2, throwangledeg, throwvelocity);
@@ -121,7 +126,6 @@ public class GameController implements Initializable {
         indicator.setLayoutY(projectile.getLayoutY());
 
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
-
     }
 
     //Anders
