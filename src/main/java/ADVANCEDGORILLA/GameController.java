@@ -18,6 +18,8 @@ import javafx.scene.shape.Polygon;
 
 public class GameController {
     private static final int CANVAS_X = 600;
+    public static Player player1 = new Player(0, 0, "p1");
+    public static Player player2 = new Player(CANVAS_X - 1, 0, "p2");
     private static Projectile proj = new Projectile(0,0);
     private static final double g = 9.81;
     private static final int totalSteps = 20;
