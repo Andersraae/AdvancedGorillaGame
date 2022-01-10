@@ -9,12 +9,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 
@@ -53,6 +55,9 @@ public class GameController implements Initializable {
     public Label visualangle, visualvelocity;
     public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
 
+    //Vind
+    public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reset();
@@ -72,9 +77,7 @@ public class GameController implements Initializable {
         g = StartController.gravity;
     }
 
-    //Vind
-    public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
-
+    //Anders
     private void changeWind(){
         Random randi = new Random();
         winddirection = randi.nextDouble(360);
@@ -115,7 +118,7 @@ public class GameController implements Initializable {
     //Anders
     //Til visuelt kast
     @FXML
-    private void onMouseClick(MouseEvent event){
+    private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
         //Kode
         if(hasTurnP1){ //player 1 har tur
             simulateProjectile(player1, player2, throwangledeg, throwvelocity);
