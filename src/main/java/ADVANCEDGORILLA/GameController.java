@@ -27,6 +27,8 @@ public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
     private static final int CANVAS_X = 600;
+    public static Player player1 = new Player(0, 0, "p1");
+    public static Player player2 = new Player(CANVAS_X - 1, 0, "p2");
     private static Projectile proj = new Projectile(0,0);
     private static int totalSteps = 20;
     private static boolean hasTurnP1 = true;
