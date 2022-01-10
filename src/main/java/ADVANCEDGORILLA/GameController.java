@@ -1,18 +1,20 @@
 package ADVANCEDGORILLA;
-
+import javafx.util.Duration;
+import javafx.animation.KeyFrame;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Random;
-import java.util.ResourceBundle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -43,6 +45,8 @@ public class GameController implements Initializable {
 
 
     public Scene root;
+    public ImageView abe1;
+    public ImageView BA;
     @FXML
     private Circle projectile;
 
@@ -113,6 +117,15 @@ public class GameController implements Initializable {
           xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
         );
 
+        //rotation af banan :)
+        RotateTransition rotateTransition = new RotateTransition();
+        rotateTransition.setDuration(Duration.millis(1800));
+        rotateTransition.setByAngle(360);
+        rotateTransition.setCycleCount(500);
+        rotateTransition.setAutoReverse(false);
+        rotateTransition.setNode(BA);
+        rotateTransition.play();
+        rotateTransition.stop();
     }
 
     //Anders
@@ -191,6 +204,12 @@ public class GameController implements Initializable {
             player2point.setText(Integer.toString(player2.getPoint()));
         }
 
+        //Christian
+        BA.setX(projectile.getLayoutX()-100);
+        BA.setY(projectile.getLayoutY()-290);
+
+
+
         //status på point
         pointStatus(player1);
         pointStatus(player2);
@@ -237,6 +256,31 @@ public class GameController implements Initializable {
         double len = player.distanceToProjectile(proj);
         return len <= CANVAS_X/50;
     }
+
+
+
+
+/*
+    final Image[] deathAnimationImages = new Image[] {};
+
+final ImageView character = new ImageView("Kast.png");
+
+        Duration frameDuration = Duration.seconds(1d / deathAnimationImages.length); // 1 second for complete animation
+        Timeline deathAnimation = new Timeline(new KeyFrame(frameDuration, new EventHandler<ActionEvent>() {
+private int index = 0;
+
+@Override
+public void handle(ActionEvent event) {
+        character.setImage(deathAnimationImages[index]);
+        index++;
+        }
+        }));
+        deathAnimation.setCycleCount(deathAnimationImages.length);
+        deathAnimation.play();
+
+
+*/
+
 
 
 }
