@@ -77,7 +77,6 @@ public class GameController {
           xdiff / 4 - 8 , - ydiff / 4 - 8,
           xdiff / 4 + 8 , - ydiff / 4 + 8
         );
-
         //rotation af banan :)
         RotateTransition rotateTransition = new RotateTransition();
         rotateTransition.setDuration(Duration.millis(1800));
@@ -93,7 +92,6 @@ public class GameController {
     @FXML
     private void onMouseClick(MouseEvent event){
         //Print til test
-
 
         System.out.println("click");
 
@@ -220,7 +218,7 @@ public class GameController {
 
 final ImageView character = new ImageView("Kast.png");
 
-        Duration frameDuration = Duration.seconds(1d / deathAnimationImages.length); // 1 second for complete animation
+        Duration frameDuration = Duration.seconds(1d / deathAnimationImages.length);
         Timeline deathAnimation = new Timeline(new KeyFrame(frameDuration, new EventHandler<ActionEvent>() {
 private int index = 0;
 
