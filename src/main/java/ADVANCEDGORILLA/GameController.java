@@ -1,71 +1,51 @@
 package ADVANCEDGORILLA;
-
+import javafx.util.Duration;
+import javafx.animation.KeyFrame;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-
-
-public class GameController implements Initializable {
-
-    //Variable der ikke skal ændres
+public class GameController {
     private static final int CANVAS_X = 600;
     private static Projectile proj = new Projectile(0,0);
-    private static int totalSteps = 20;
-    private static boolean hasTurnP1 = true;
-    private static Player winner = new Player(-1,-1,"null");
-    private static boolean winnerFound = false;
+    private static final double g = 9.81;
+    private static final int totalSteps = 20;
+    private boolean hasTurnP1 = true;
 
-    //Variable fra startScreen
-    private static int FirstTo = StartController.PlayingTo;
-    public static Player player1 = new Player(0, 0, StartController.namePlayer1);
-    public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-    private static double g = StartController.gravity;
-
-    //variable fra game-view ift point og navne
-    @FXML
-    public Label namePlayer1, namePlayer2,player1point, player2point;
-
-
+    public Label player1point;
+    public Label player2point;
     public Scene root;
+    public ImageView abe1;
+    public ImageView BA;
     @FXML
     private Circle projectile;
 
     //Manuel kast
     @FXML
-    private TextField angle, velocity;
+    private TextField angle;
+    @FXML
+    private TextField velocity;
 
     //Visuel kast
     public Polygon indicator;
-    public Label visualangle, visualvelocity;
-    public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        reset();
-        namePlayer1.setText(player1.getName());
-        namePlayer2.setText(player2.getName());
-    }
-
-    public static void reset(){
-        hasTurnP1 = true;
-        proj = new Projectile(0,0);
-        winner = new Player(-1,-1,"null");
-        winnerFound = false;
-        FirstTo = StartController.PlayingTo;
-        player1 = new Player(0, 0, StartController.namePlayer1);
-        player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-        g = StartController.gravity;
-    }
+    public Label visualangle;
+    public Label visualvelocity;
+    public double xdiff;
+    public double ydiff;
+    public double throwvelocity;
+    public double throwangledeg;
+    public double displayangle;
 
     //Anders
     //Til visuelt kast
@@ -96,13 +76,23 @@ public class GameController implements Initializable {
           xdiff / 4 + 8 , - ydiff / 4 + 8
         );
 
+        //rotation af banan :)
+        RotateTransition rotateTransition = new RotateTransition();
+        rotateTransition.setDuration(Duration.millis(1800));
+        rotateTransition.setByAngle(360);
+        rotateTransition.setCycleCount(500);
+        rotateTransition.setAutoReverse(false);
+        rotateTransition.setNode(BA);
+        rotateTransition.play();
+        rotateTransition.stop();
     }
-
     //Anders
     //Til visuelt kast
     @FXML
-    private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
+    private void onMouseClick(MouseEvent event){
         //Print til test
+
+
         System.out.println("click");
 
         System.out.println(event.getX());
@@ -121,6 +111,8 @@ public class GameController implements Initializable {
         indicator.setLayoutY(projectile.getLayoutY());
 
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
+
+
 
     }
 
@@ -148,7 +140,7 @@ public class GameController implements Initializable {
     }
 
     //Andreas
-    public void simulateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
+    public void simulateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY){
         double angle = Math.toRadians(ANGLE_IN_DEGREES);
         double xVelocity = VELOCITY * Math.cos(angle);
         double yVelocity = VELOCITY * Math.sin(angle);
@@ -176,6 +168,7 @@ public class GameController implements Initializable {
             System.out.println(stepCounter + "\t" + round(x) + "\t" + round(y) + "\t" + round(t) + "\t" + round(l));
         }
 
+        System.out.println();
 
         if (playerIsHit(targetPlayer)){
             shootingPlayer.addPoint(1);
@@ -183,53 +176,65 @@ public class GameController implements Initializable {
             player1point.setText(Integer.toString(player1.getPoint()));
             player2point.setText(Integer.toString(player2.getPoint()));
         }
+        //christian
+        BA.setX(projectile.getLayoutX()-100);
+        BA.setY(projectile.getLayoutY()-290);
+
+
+
+
+
 
         //status på point
-        pointStatus(player1);
-        pointStatus(player2);
+        System.out.println(player1.getName() + ":" + player1.getPoint());
+        System.out.println(player2.getName() + ":" + player2.getPoint());
 
-        //tjekker om vinder er fundet
-        if (winnerFound){
-            System.out.println(winner.getName() + " har vundet!");
-            GameApplication.setStage("gameover-screen.fxml");
-        } else{
-            //skifte tur
-            if (hasTurnP1){
-                hasTurnP1 = false;
-            } else {
-                hasTurnP1 = true;
-            }
-            System.out.println(targetPlayer.getName() + " har tur!");
+        //skifte tur
+        if (hasTurnP1){
+            hasTurnP1 = false;
+        } else {
+            hasTurnP1 = true;
         }
 
+        System.out.println(targetPlayer.getName() + " har tur!");
     }
 
     //Andreas
-    //Kaldes efter et kast er sket
-    //Tager en Player og printer point til konsollen, samt tjekker om spilleren har vundet
-    public void pointStatus(Player player){
-        System.out.println(player.getName() + ":" + player.getPoint());
-
-        if (player.getPoint() == FirstTo){
-            winner = player;
-            winnerFound = true;
-        }
-    }
-
-    //Andreas
-    //Kaldes når koordinater skal printes til konsollen
-    //Tager en double og laver den om til 2 decimaler og retunerer den som streng
     public static String round(double a){
         return String.format("%.2f",a);
     }
 
     //Andreas
-    //Kaldes efter et kast er sket
-    //Tager en Player og retunerer true når en spiller er ramt
     public static boolean playerIsHit(Player player){
         double len = player.distanceToProjectile(proj);
         return len <= CANVAS_X/50;
     }
 
 
+
+
+/*
+    final Image[] deathAnimationImages = new Image[] {};
+
+final ImageView character = new ImageView("Kast.png");
+
+        Duration frameDuration = Duration.seconds(1d / deathAnimationImages.length); // 1 second for complete animation
+        Timeline deathAnimation = new Timeline(new KeyFrame(frameDuration, new EventHandler<ActionEvent>() {
+private int index = 0;
+
+@Override
+public void handle(ActionEvent event) {
+        character.setImage(deathAnimationImages[index]);
+        index++;
+        }
+        }));
+        deathAnimation.setCycleCount(deathAnimationImages.length);
+        deathAnimation.play();
+
+
+*/
+
+
+
 }
+
