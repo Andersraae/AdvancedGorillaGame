@@ -118,14 +118,14 @@ public class GameController implements Initializable {
         );
 
         //rotation af banan :)
-        RotateTransition rotateTransition = new RotateTransition();
-        rotateTransition.setDuration(Duration.millis(1800));
-        rotateTransition.setByAngle(360);
-        rotateTransition.setCycleCount(500);
-        rotateTransition.setAutoReverse(false);
-        rotateTransition.setNode(BA);
-        rotateTransition.play();
-        rotateTransition.stop();
+        RotateTransition rotationBanan = new RotateTransition();
+        rotationBanan.setDuration(Duration.millis(1800));
+        rotationBanan.setByAngle(360);
+        rotationBanan.setCycleCount(500);
+        rotationBanan.setAutoReverse(false);
+        rotationBanan.setNode(BA);
+        rotationBanan.play();
+        rotationBanan.stop();
     }
 
     //Anders
