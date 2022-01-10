@@ -29,7 +29,7 @@
       <!-- Visuelt kast -->
 
       <!-- Projektil -->
-      <Circle fx:id="projectile" fill="YELLOW" layoutY="356" opacity="0.67" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="projectile" fill="YELLOW" layoutY="356" opacity="0.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
       <!-- Projektil -->
 
       <!-- Spiller/Point -->
