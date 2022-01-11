@@ -1,4 +1,6 @@
 package ADVANCEDGORILLA;
+import javafx.animation.Interpolator;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
@@ -67,7 +69,8 @@ public class GameController implements Initializable {
         reset();
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
-        changeWind();
+        windforce = Wind.changeWindForce();
+        winddirection = Wind.changeWindDirection();
 
         //Christian
         /* kør kun startpos en gang!
@@ -107,13 +110,6 @@ public class GameController implements Initializable {
     }
 
     //Anders
-    private void changeWind(){
-        Random randi = new Random();
-        winddirection = randi.nextDouble(360);
-        windforce = randi.nextInt(5);
-    }
-
-    //Anders
     //Til visuelt kast
     @FXML
     private void onMouseMove(MouseEvent event){
@@ -149,9 +145,9 @@ public class GameController implements Initializable {
     private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
         //Tur
         if(player1HasTurn){ //player 1 har tur
-            simulateProjectile(player1, player2, throwangledeg, throwvelocity);
+            animateProjectile(player1, player2, throwangledeg, throwvelocity);
         } else { //player 2 har tur
-            simulateProjectile(player2, player1, -throwangledeg, -throwvelocity);
+            animateProjectile(player2, player1, throwangledeg, throwvelocity);
         }
 
         //projektil
@@ -195,31 +191,77 @@ public class GameController implements Initializable {
             angle.clear();
             velocity.clear();
 
-            //Christian
-            //rotation af banan :)
-            RotateTransition rotationBanan;
-            rotationBanan = new RotateTransition();
-            rotationBanan.setDuration(Duration.seconds(3));
-            rotationBanan.setByAngle(360);
-            rotationBanan.setCycleCount(1);
-            rotationBanan.setAutoReverse(false);
-            rotationBanan.setNode(BA);
-
-            RotateTransition rotationBanan2;
-            rotationBanan2 = new RotateTransition();
-            rotationBanan2.setDuration(Duration.seconds(3));
-            rotationBanan2.setByAngle(-360);
-            rotationBanan2.setCycleCount(1);
-            rotationBanan2.setAutoReverse(false);
-            rotationBanan2.setNode(BA);
-
-            if(player1HasTurn) {
-                rotationBanan.play();
-        }else{rotationBanan2.play();}
-
         } catch (Exception e){
             System.out.println(e);
         }
+    }
+
+    //Andreas (Udregningen)
+    //Christian (Animation)
+    public void animateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
+        //Christian
+        //rotation af banan :)
+        RotateTransition rotationBanan = new RotateTransition();
+        rotationBanan.setCycleCount(rotationBanan.INDEFINITE);
+        rotationBanan.setByAngle(360);
+        rotationBanan.setInterpolator(Interpolator.LINEAR);
+        rotationBanan.setAutoReverse(false);
+        rotationBanan.setNode(BA);
+
+        //Kurve animation
+        //TODO: Pas metoden til, så bananen ikke bare starter i 0,0
+        Timeline throwanimation = new Timeline();
+        throwanimation.setCycleCount(Timeline.INDEFINITE);
+        int updatemillis = 10;
+        KeyFrame bananakeyrframe = new KeyFrame(Duration.millis(updatemillis), new EventHandler<ActionEvent>() {
+            double angle = Math.toRadians(ANGLE_IN_DEGREES);
+            double xVelocity = VELOCITY * Math.cos(angle);
+            double yVelocity = VELOCITY * Math.sin(angle);
+            double totalTime = - updatemillis * 3.17 * yVelocity / -g; //Tilpasset godt og vel til funktionen med de 3.17
+            double timeIncrement = totalTime / 1000;
+            double xIncrement = xVelocity * timeIncrement;
+            double x = shootingPlayer.getX();
+            double y = shootingPlayer.getY();
+            double realtime;
+
+            @Override
+            public void handle(ActionEvent event) {
+                realtime += rotationBanan.getCurrentTime().toSeconds();
+
+                x += xIncrement;
+                y = yVelocity * realtime + 0.5 * -g * realtime * realtime;
+                proj.setX(x);
+                proj.setY(y);
+                projectile.setLayoutX(x);
+                projectile.setCenterY(y);
+
+
+                //Christian
+                //sætter pos af billede til projectile Pos
+                BA.setX(x); //TODO: Fiks det her igen så det passer igen
+                BA.setY(110 - y);
+
+                double l = targetPlayer.distanceToProjectile(proj);
+                System.out.println("x: " + round(x) + " y: " + round(y) + " realtime: " + round(realtime) + " afstand: " + round(l));
+
+                if (y < 0){ //Stopper animation når bananen rammer jorden
+                    throwanimation.stop();
+                    rotationBanan.stop();
+                }
+
+            }
+        });
+        throwanimation.getKeyFrames().add(bananakeyrframe);
+        throwanimation.play();
+
+        if (player1HasTurn) {
+            rotationBanan.setRate(1);
+            rotationBanan.play();
+        } else {
+            rotationBanan.setRate(-1);
+            rotationBanan.play();
+        }
+
     }
 
     //Andreas
