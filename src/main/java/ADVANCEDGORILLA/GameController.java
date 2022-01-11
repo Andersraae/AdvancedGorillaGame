@@ -86,7 +86,7 @@ public class GameController implements Initializable {
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup(3); // 1-5
+                Computer.setup(2); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -132,7 +132,7 @@ public class GameController implements Initializable {
         }
 
         throwvelocity /= 4; //Gør det nemmere at styre hastigheden
-        
+
         visualangle.setText("Vinkel: " + round(displayangle));
         visualvelocity.setText("Hastighed: " + round(throwvelocity));
 
@@ -167,7 +167,7 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-
+            
             double numangle, numvelocity;
 
             //Tur
@@ -251,7 +251,6 @@ public class GameController implements Initializable {
             System.out.println(stepCounter + "\t" + round(x) + "\t" + round(y) + "\t" + round(t) + "\t" + round(l));
         }
 
-
         if (playerIsHit(targetPlayer)){
             shootingPlayer.addPoint(1);
             System.out.println(targetPlayer.getName() + " is hit!");
@@ -263,8 +262,6 @@ public class GameController implements Initializable {
         //sætter pos af billede til projectile Pos
         BA.setX(projectile.getLayoutX()-100);
         BA.setY(projectile.getLayoutY()-290);
-
-
 
         //status på point
         pointStatus(player1);
@@ -283,7 +280,6 @@ public class GameController implements Initializable {
             }
             System.out.println(targetPlayer.getName() + " har tur!");
         }
-
     }
 
     //Andreas
@@ -312,10 +308,6 @@ public class GameController implements Initializable {
         double len = player.distanceToProjectile(proj);
         return len <= CANVAS_X/50;
     }
-
-
-
-
 /*
     final Image[] deathAnimationImages = new Image[] {};
 
@@ -336,7 +328,4 @@ public void handle(ActionEvent event) {
 
 
 */
-
-
-
 }
