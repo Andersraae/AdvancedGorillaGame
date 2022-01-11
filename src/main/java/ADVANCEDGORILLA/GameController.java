@@ -80,13 +80,13 @@ public class GameController implements Initializable {
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(true);
-        player2.setComputer(true);
+        player1.setComputer(false);
+        player2.setComputer(false);
 
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup();
+                Computer.setup(3); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

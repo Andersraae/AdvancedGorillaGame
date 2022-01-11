@@ -3,27 +3,26 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-        //difficulty
-        /*
-        lvl: 1 gns: 10.1231
-        lvl: 2 gns: 7.26794
-        lvl: 3 gns: 5.40815
-        lvl: 4 gns: 2.74748
-        lvl: 5 gns: 1.50015
-        */
+// TODO: vind, bygninger, køre hvert kast for-løkke
 
+/*
+diff:1 gns:5.44115
+diff:2 gns:5.02417
+diff:3 gns:4.5096
+diff:4 gns:3.69276
+diff:5 gns:1.44226
+ */
 public class Computer {
+
     public static int guessCounter;
-    public static int maxLevel = 5;
     public static ArrayList<Guess> computerMoves;
-    public static int chosenDifficulty = 1; //1-5
     public static int currentGuessNumber = 0;
 
     //startup
-    public static void setup() throws InterruptedException {
+    public static void setup(int difficulty) throws InterruptedException {
         Player player1 = GameController.player1;
         Player player2 = GameController.player2;
-        computerMoves = Computer.calculate(player1,player2,chosenDifficulty);
+        computerMoves = Computer.calculate(player1,player2,difficulty);
     }
 
     //henter næste computertræk
@@ -33,80 +32,75 @@ public class Computer {
         if (currentGuessNumber + 1 < computerMoves.size()){
             currentGuessNumber++;
         }
-
         return move;
     }
 
     //beregner alle de træk der skal til for at computeren rammer modspilleren
     //retunerer alle træk i en liste
-    public static ArrayList<Guess> calculate(Player shooter, Player target, int difficulty) throws InterruptedException {
+    private static double g = 9.81;
+    private static int angleInDegrees = 20;
 
+    public static ArrayList<Guess> calculate(Player shooter, Player target, int difficulty){
         //variables
         ArrayList<Guess> list = new ArrayList<>();
-        int range = (int)Math.ceil(Math.pow(10,maxLevel-difficulty)) / 2 + 1;
         Random random = new Random();
         guessCounter = 1;
         int side = 1;
+        double angleInRadians = Math.toRadians(angleInDegrees);
 
         if (shooter.equals(GameController.player2)){
             side = -1;
         }
 
         //find correct answer
-        //target.setX(599);
         int num = (int) Math.abs(target.getX() - shooter.getX());
-
-        int correct = (int) Math.sqrt(num/0.1019367992);
+        double udtryk = 2*Math.sin(angleInRadians)*(Math.sin(angleInRadians)*Math.sin(angleInRadians)-1);
+        int correct = (int) Math.abs((Math.sqrt(-udtryk*Math.cos(angleInRadians)*g*num)/udtryk));
 
         //find upper and lower bound
-        int lower = correct - range;
-        int upper = correct + range;
-
-        if (lower < 0){
-            lower = 0;
+        int totalNumbers = 150 - 30 * difficulty + 3;
+        //System.out.println(difficulty);
+        int rand = random.nextInt(totalNumbers);
+        int lower = correct - rand;
+        int upper = correct + totalNumbers - rand;
+        if (lower < 1){
+            upper += Math.abs(lower);
+            lower = 1;
         }
-
-        if (upper > GameController.CANVAS_X){
-            upper = GameController.CANVAS_X -1;
-        }
-
         //System.out.println("num\tgue\tlow\tcor\tupp");
 
         //generate random velocity between upper and lower bound
-        int guess = random.nextInt(upper - lower) + lower;
-        list.add(new Guess(45,guess));
+        int guessedVelocity = random.nextInt(upper - lower) + lower; // t
+        list.add(new Guess(angleInDegrees,guessedVelocity));
 
         //print table
-        //System.out.println(guessCounter + "\t" + guess + "\t" + lower + "\t" + correct + "\t" + upper );
+        //System.out.println(guessCounter + "\t" + guessedVelocity + "\t" + lower + "\t" + correct + "\t" + upper );
 
         //while number is incorrect
         while(!playerIsHit(shooter,target, side*list.get(guessCounter-1).getAngle(),side*list.get(guessCounter-1).getVelocity())){
 
-            //TimeUnit.SECONDS.sleep(1);
-
             //if too high, lowerBound<correct<prevAnswer
-            if (correct < guess){
-                upper = guess - 1;
+            if (correct < guessedVelocity){
+                upper = guessedVelocity - 1;
             }
 
             //if too low, answer<correct<upperbound
-            if (correct > guess){
-                lower = guess + 1;
+            if (correct > guessedVelocity){
+                lower = guessedVelocity + 1;
             }
 
             //guess the number in the middle
-            guess = upper - (upper - lower) / 2;
-            list.add(new Guess(45,guess));
+            guessedVelocity = upper - (upper - lower) / 2;
+            list.add(new Guess(angleInDegrees,guessedVelocity));
 
             //add one
             guessCounter++;
 
             //print table
-           // System.out.println(guessCounter + "\t" + guess + "\t" + lower + "\t" + correct + "\t" + upper );
+            // System.out.println(guessCounter + "\t" + guessedVelocity + "\t" + lower + "\t" + correct + "\t" + upper );
         }
         return list;
     }
-
 
     //tager 2 spillere, en vinkel og hastighed
     //beregner hvor projektilen rammer jorden og derefter beregner afstanden skal spilleren der sigtes efter
