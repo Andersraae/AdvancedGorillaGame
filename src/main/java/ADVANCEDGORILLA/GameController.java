@@ -119,18 +119,9 @@ public class GameController implements Initializable {
           xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
         );
 
-        //rotation af banan :)
-        RotateTransition rotationBanan = new RotateTransition();
-        rotationBanan.setDuration(Duration.millis(1800));
-        rotationBanan.setByAngle(360);
-        rotationBanan.setCycleCount(500);
-        rotationBanan.setAutoReverse(false);
-        rotationBanan.setNode(BA);
-        rotationBanan.play();
-        rotationBanan.stop();
     }
 
-    }
+
     //Anders
     //Til visuelt kast
     @FXML
