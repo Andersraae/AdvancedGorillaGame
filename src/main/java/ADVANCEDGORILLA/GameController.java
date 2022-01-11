@@ -56,13 +56,13 @@ public class GameController implements Initializable {
         namePlayer2.setText(player2.getName());
 
         //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(false);
+        player1.setComputer(true);
         player2.setComputer(true);
 
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup();
+                Computer.setup(3); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -145,8 +145,8 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-            double numangle = Double.parseDouble(angle.getText());
-            double numvelocity = Double.parseDouble(velocity.getText());
+            double numangle;
+            double numvelocity;
 
             //Tur
             if(player1HasTurn){ //player 1 har tur
@@ -154,6 +154,8 @@ public class GameController implements Initializable {
                     Guess guess = Computer.nextComputerMove();
                     simulateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
+                    numangle = Double.parseDouble(angle.getText());
+                    numvelocity = Double.parseDouble(velocity.getText());
                     simulateProjectile(player1, player2, numangle, numvelocity);
                 }
             } else { //player 2 har tur
@@ -161,6 +163,8 @@ public class GameController implements Initializable {
                     Guess guess = Computer.nextComputerMove();
                     simulateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
+                    numangle = Double.parseDouble(angle.getText());
+                    numvelocity = Double.parseDouble(velocity.getText());
                     simulateProjectile(player2, player1, -numangle, -numvelocity);
                 }
             }
