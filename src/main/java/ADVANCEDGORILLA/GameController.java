@@ -44,7 +44,7 @@ public class GameController implements Initializable {
     @FXML
     public Label namePlayer1, namePlayer2,player1point, player2point;
 
-
+    public boolean Executed = false;
     public Scene root;
     public ImageView abe1;
     public ImageView BA;
@@ -70,6 +70,14 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         changeWind();
+
+       /* kør kun startpos en gang!
+        if(!Executed) {
+            BA.setLayoutX(0);
+            BA.setLayoutY(360);
+            Executed = true;
+        }
+        */
     }
 
     public static void reset(){
@@ -183,14 +191,9 @@ public class GameController implements Initializable {
         }
     }
 
-/* kør kun startpos en gang!
-        if(!alreadyExecuted) {
-        BA.setLayoutX(0);
-        BA.setLayoutY(0);
-        alreadyExecuted = true;
-    }
 
- */
+
+
     //Andreas
     public void simulateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
         double angle = Math.toRadians(ANGLE_IN_DEGREES);
