@@ -30,6 +30,7 @@ public class GameController {
     public Scene root;
     public ImageView abe1;
     public ImageView BA;
+    public ImageView abeKast;
     @FXML
     private Circle projectile;
 
@@ -48,6 +49,8 @@ public class GameController {
     public double throwvelocity;
     public double throwangledeg;
     public double displayangle;
+    private boolean alreadyExecuted;
+
 
     //Anders
     //Til visuelt kast
@@ -77,15 +80,8 @@ public class GameController {
           xdiff / 4 - 8 , - ydiff / 4 - 8,
           xdiff / 4 + 8 , - ydiff / 4 + 8
         );
-        //rotation af banan :)
-        RotateTransition rotationBanan = new RotateTransition();
-        rotationBanan.setDuration(Duration.millis(1800));
-        rotationBanan.setByAngle(360);
-        rotationBanan.setCycleCount(500);
-        rotationBanan.setAutoReverse(false);
-        rotationBanan.setNode(BA);
-        rotationBanan.play();
-        rotationBanan.stop();
+
+
     }
     //Anders
     //Til visuelt kast
@@ -112,8 +108,6 @@ public class GameController {
 
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
 
-
-
     }
 
     //Anders
@@ -134,11 +128,41 @@ public class GameController {
             angle.clear();
             velocity.clear();
 
+            //Christian
+            //rotation af banan :)
+            RotateTransition rotationBanan;
+            rotationBanan = new RotateTransition();
+            rotationBanan.setDuration(Duration.seconds(3));
+            rotationBanan.setByAngle(360);
+            rotationBanan.setCycleCount(1);
+            rotationBanan.setAutoReverse(false);
+            rotationBanan.setNode(BA);
+
+            RotateTransition rotationBanan2;
+            rotationBanan2 = new RotateTransition();
+            rotationBanan2.setDuration(Duration.seconds(3));
+            rotationBanan2.setByAngle(-360);
+            rotationBanan2.setCycleCount(1);
+            rotationBanan2.setAutoReverse(false);
+            rotationBanan2.setNode(BA);
+
+            if(hasTurnP1 == true) {
+                rotationBanan.play();
+        }else{rotationBanan2.play();}
+
         } catch (Exception e){
             System.out.println(e);
         }
     }
 
+/* kør kun startpos en gang!
+        if(!alreadyExecuted) {
+        BA.setLayoutX(0);
+        BA.setLayoutY(0);
+        alreadyExecuted = true;
+    }
+    
+ */
     //Andreas
     public void simulateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY){
         double angle = Math.toRadians(ANGLE_IN_DEGREES);
@@ -177,11 +201,9 @@ public class GameController {
             player2point.setText(Integer.toString(player2.getPoint()));
         }
         //christian
+        // sætter pos af billede til projectile Pos
         BA.setX(projectile.getLayoutX()-100);
         BA.setY(projectile.getLayoutY()-290);
-
-
-
 
 
 
@@ -198,6 +220,7 @@ public class GameController {
 
         System.out.println(targetPlayer.getName() + " har tur!");
     }
+
 
     //Andreas
     public static String round(double a){
