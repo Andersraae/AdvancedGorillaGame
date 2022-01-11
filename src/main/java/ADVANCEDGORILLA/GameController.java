@@ -127,7 +127,7 @@ public class GameController implements Initializable {
             displayangle = - throwangledeg;
         }
 
-        if (player1HasTurn == false){
+        if (!player1HasTurn){
             displayangle = 180 - throwangledeg;
         }
 
@@ -157,6 +157,7 @@ public class GameController implements Initializable {
         //projektil
         indicator.setLayoutX(projectile.getLayoutX());
         indicator.setLayoutY(projectile.getLayoutY());
+
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
     }
 
@@ -207,7 +208,7 @@ public class GameController implements Initializable {
             rotationBanan2.setAutoReverse(false);
             rotationBanan2.setNode(BA);
 
-            if(hasTurnP1 == true) {
+            if(player1HasTurn) {
                 rotationBanan.play();
         }else{rotationBanan2.play();}
 
