@@ -1,4 +1,5 @@
 package ADVANCEDGORILLA;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -123,4 +124,3 @@ public class Computer {
         return l <= GameController.CANVAS_X / 50;
     }
 }
-

@@ -1,16 +1,24 @@
 package ADVANCEDGORILLA;
-
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.util.Duration;
+import javafx.animation.KeyFrame;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 
@@ -30,13 +38,15 @@ public class GameController implements Initializable {
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     private static double g = StartController.gravity;
 
-
     //variable fra game-view ift point og navne
     @FXML
     public Label namePlayer1, namePlayer2,player1point, player2point;
 
-
+    public boolean Executed = false;
     public Scene root;
+    public ImageView abe1;
+    public ImageView BA;
+    public ImageView abeKast;
     @FXML
     private Circle projectile;
 
@@ -49,12 +59,26 @@ public class GameController implements Initializable {
     public Label visualangle, visualvelocity;
     public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
 
+    //Vind
+    public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reset();
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
+        changeWind();
 
+        //Christian
+        /* kør kun startpos en gang!
+        if(!Executed) {
+            BA.setLayoutX(0);
+            BA.setLayoutY(360);
+            Executed = true;
+        }
+        */
+
+        //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
         player1.setComputer(true);
         player2.setComputer(true);
@@ -62,7 +86,7 @@ public class GameController implements Initializable {
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup(3); // 1-5
+                Computer.setup(2); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -83,6 +107,13 @@ public class GameController implements Initializable {
     }
 
     //Anders
+    private void changeWind(){
+        Random randi = new Random();
+        winddirection = randi.nextDouble(360);
+        windforce = randi.nextInt(5);
+    }
+
+    //Anders
     //Til visuelt kast
     @FXML
     private void onMouseMove(MouseEvent event){
@@ -96,19 +127,19 @@ public class GameController implements Initializable {
             displayangle = - throwangledeg;
         }
 
-        if (player1HasTurn == false){
+        if (!player1HasTurn){
             displayangle = 180 - throwangledeg;
         }
 
         throwvelocity /= 4; //Gør det nemmere at styre hastigheden
-        
+
         visualangle.setText("Vinkel: " + round(displayangle));
         visualvelocity.setText("Hastighed: " + round(throwvelocity));
 
         indicator.getPoints().setAll(
-          0.0,0.0,
-          xdiff / 4 - 8 , - ydiff / 4 - 8,
-          xdiff / 4 + 8 , - ydiff / 4 + 8
+                0.0,0.0,
+                xdiff / 4 - 0.1 * xdiff , - ydiff / 4 - 0.1 * ydiff,
+                xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
         );
     }
 
@@ -116,15 +147,6 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
-        //Print til test
-        System.out.println("click");
-
-        System.out.println(event.getX());
-        System.out.println(event.getY());
-
-        System.out.println(projectile.getLayoutX());
-        System.out.println(projectile.getLayoutY());
-
         //Tur
         if(player1HasTurn){ //player 1 har tur
             simulateProjectile(player1, player2, throwangledeg, throwvelocity);
@@ -135,8 +157,8 @@ public class GameController implements Initializable {
         //projektil
         indicator.setLayoutX(projectile.getLayoutX());
         indicator.setLayoutY(projectile.getLayoutY());
-        System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
 
+        System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
     }
 
     //Anders
@@ -145,8 +167,8 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-            double numangle;
-            double numvelocity;
+
+            double numangle, numvelocity;
 
             //Tur
             if(player1HasTurn){ //player 1 har tur
@@ -168,9 +190,32 @@ public class GameController implements Initializable {
                     simulateProjectile(player2, player1, -numangle, -numvelocity);
                 }
             }
+
             //Fjerner værdier fra sidste spiller
             angle.clear();
             velocity.clear();
+
+            //Christian
+            //rotation af banan :)
+            RotateTransition rotationBanan;
+            rotationBanan = new RotateTransition();
+            rotationBanan.setDuration(Duration.seconds(3));
+            rotationBanan.setByAngle(360);
+            rotationBanan.setCycleCount(1);
+            rotationBanan.setAutoReverse(false);
+            rotationBanan.setNode(BA);
+
+            RotateTransition rotationBanan2;
+            rotationBanan2 = new RotateTransition();
+            rotationBanan2.setDuration(Duration.seconds(3));
+            rotationBanan2.setByAngle(-360);
+            rotationBanan2.setCycleCount(1);
+            rotationBanan2.setAutoReverse(false);
+            rotationBanan2.setNode(BA);
+
+            if(player1HasTurn) {
+                rotationBanan.play();
+            }else{rotationBanan2.play();}
 
         } catch (Exception e){
             System.out.println(e);
@@ -213,6 +258,13 @@ public class GameController implements Initializable {
             player1point.setText(Integer.toString(player1.getPoint()));
             player2point.setText(Integer.toString(player2.getPoint()));
         }
+
+        //Christian
+        //sætter pos af billede til projectile Pos
+        BA.setX(projectile.getLayoutX()-100);
+        BA.setY(projectile.getLayoutY()-290);
+
+
 
         //status på point
         pointStatus(player1);
@@ -264,6 +316,26 @@ public class GameController implements Initializable {
 
 
 
+/*
+    final Image[] deathAnimationImages = new Image[] {};
+
+final ImageView character = new ImageView("Kast.png");
+
+        Duration frameDuration = Duration.seconds(1d / deathAnimationImages.length);
+        Timeline deathAnimation = new Timeline(new KeyFrame(frameDuration, new EventHandler<ActionEvent>() {
+private int index = 0;
+
+@Override
+public void handle(ActionEvent event) {
+        character.setImage(deathAnimationImages[index]);
+        index++;
+        }
+        }));
+        deathAnimation.setCycleCount(deathAnimationImages.length);
+        deathAnimation.play();
+
+
+*/
 
 
 
