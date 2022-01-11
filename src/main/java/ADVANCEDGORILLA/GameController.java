@@ -80,7 +80,7 @@ public class GameController implements Initializable {
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(false);
+        player1.setComputer(true);
         player2.setComputer(true);
 
         //setup computer
@@ -167,8 +167,8 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-            double numangle = Double.parseDouble(angle.getText());
-            double numvelocity = Double.parseDouble(velocity.getText());
+
+            double numangle, numvelocity;
 
             //Tur
             if(player1HasTurn){ //player 1 har tur
@@ -176,6 +176,8 @@ public class GameController implements Initializable {
                     Guess guess = Computer.nextComputerMove();
                     simulateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
+                    numangle = Double.parseDouble(angle.getText());
+                    numvelocity = Double.parseDouble(velocity.getText());
                     simulateProjectile(player1, player2, numangle, numvelocity);
                 }
             } else { //player 2 har tur
@@ -183,9 +185,12 @@ public class GameController implements Initializable {
                     Guess guess = Computer.nextComputerMove();
                     simulateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
+                    numangle = Double.parseDouble(angle.getText());
+                    numvelocity = Double.parseDouble(velocity.getText());
                     simulateProjectile(player2, player1, -numangle, -numvelocity);
                 }
             }
+
             //Fjerner værdier fra sidste spiller
             angle.clear();
             velocity.clear();

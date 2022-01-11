@@ -6,7 +6,8 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ADVANCEDGORILLA.GameController">
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ADVANCEDGORILLA.GameoverController">
    <children>
       <Button layoutX="120.0" layoutY="144.0" mnemonicParsing="false" text="Spil igen" onAction="#reset"/>
       <Label layoutX="108.0" layoutY="26.0" prefHeight="21.0" prefWidth="105.0" text="GAME OVER!">

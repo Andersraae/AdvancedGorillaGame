@@ -3,25 +3,20 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-//difficulty
-/*
-        lvl: 1 gns: 26.60568
-        lvl: 2 gns: 23.33402
-        lvl: 3 gns: 19.96377
-        lvl: 4 gns: 16.64994
-        lvl: 5 gns: 13.36712
-        lvl: 6 gns: 10.1231
-        lvl: 7 gns: 7.26794
-        lvl: 8 gns: 5.40815
-        lvl: 9 gns: 2.74748
-        lvl: 10 gns: 1.50015
+        //difficulty
+        /*
+        lvl: 1 gns: 10.1231
+        lvl: 2 gns: 7.26794
+        lvl: 3 gns: 5.40815
+        lvl: 4 gns: 2.74748
+        lvl: 5 gns: 1.50015
         */
 
 public class Computer {
     public static int guessCounter;
     public static int maxLevel = 5;
     public static ArrayList<Guess> computerMoves;
-    public static int chosenDifficulty = 3; //1-5
+    public static int chosenDifficulty = 1; //1-5
     public static int currentGuessNumber = 0;
 
     //startup

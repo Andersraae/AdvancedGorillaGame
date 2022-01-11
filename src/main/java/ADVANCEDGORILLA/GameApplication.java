@@ -36,8 +36,6 @@ public class GameApplication extends Application{
 
         closeStageIfNotFirst();
         currentStage = stage;
-
-
     }
 
     //Andreas
