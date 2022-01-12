@@ -2,6 +2,7 @@ package ADVANCEDGORILLA;
 import javafx.animation.Interpolator;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
@@ -13,10 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,7 +44,6 @@ public class GameController implements Initializable {
     public Label namePlayer1, namePlayer2,player1point, player2point;
 
     public boolean Executed = false;
-    public Scene root;
     public ImageView abe1;
     public ImageView BA;
     public ImageView abeKast;
@@ -57,7 +55,7 @@ public class GameController implements Initializable {
     private TextField angle, velocity;
 
     //Visuel kast
-    public Polygon indicator;
+    public Line indicatorp1, indicatorp2;
     public Label visualangle, visualvelocity;
     public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
 
@@ -96,7 +94,7 @@ public class GameController implements Initializable {
         }
     }
 
-    public static void reset(){
+    public void reset(){
         //setup tur
         player1HasTurn = true;
         proj = new Projectile(0,0);
@@ -113,8 +111,8 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseMove(MouseEvent event){
-        xdiff = event.getX() - projectile.getLayoutX();
-        ydiff = projectile.getLayoutY() - event.getY();
+        xdiff = event.getX() - BA.getLayoutX();
+        ydiff = BA.getLayoutY() - event.getY();
         throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         throwangledeg = Math.toDegrees(Math.acos(xdiff/throwvelocity));
         displayangle = throwangledeg;
@@ -132,11 +130,15 @@ public class GameController implements Initializable {
         visualangle.setText("Vinkel: " + round(displayangle));
         visualvelocity.setText("Hastighed: " + round(throwvelocity));
 
-        indicator.getPoints().setAll(
-          0.0,0.0,
-          xdiff / 4 - 0.1 * xdiff , - ydiff / 4 - 0.1 * ydiff,
-          xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
-        );
+        System.out.println(Math.cos(Math.toRadians(displayangle)));
+
+        if (player1HasTurn){
+            indicatorp1.setEndX(xdiff/4);
+            indicatorp1.setEndY(-ydiff/4);
+        } else {
+            indicatorp2.setEndX(xdiff/4);
+            indicatorp2.setEndY(-ydiff/4);
+        }
     }
 
     //Anders
@@ -149,10 +151,6 @@ public class GameController implements Initializable {
         } else { //player 2 har tur
             animateProjectile(player2, player1, throwangledeg, throwvelocity);
         }
-
-        //projektil
-        indicator.setLayoutX(projectile.getLayoutX());
-        indicator.setLayoutY(projectile.getLayoutY());
 
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
     }
@@ -198,6 +196,7 @@ public class GameController implements Initializable {
 
     //Andreas (Udregningen)
     //Christian (Animation)
+    //Anders (Omskrevet udregning til animation og implementeret eksisterende animationer)
     public void animateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
         //Christian
         //rotation af banan :)
@@ -208,6 +207,7 @@ public class GameController implements Initializable {
         rotationBanan.setAutoReverse(false);
         rotationBanan.setNode(BA);
 
+        //Anders (Omskrivning) Andreas (Udregning)
         //Kurve animation
         //TODO: Pas metoden til, så bananen ikke bare starter i 0,0
         Timeline throwanimation = new Timeline();
@@ -232,9 +232,6 @@ public class GameController implements Initializable {
                 y = yVelocity * realtime + 0.5 * -g * realtime * realtime;
                 proj.setX(x);
                 proj.setY(y);
-                projectile.setLayoutX(x);
-                projectile.setCenterY(y);
-
 
                 //Christian
                 //sætter pos af billede til projectile Pos
@@ -261,6 +258,20 @@ public class GameController implements Initializable {
             rotationBanan.setRate(-1);
             rotationBanan.play();
         }
+
+        if (playerIsHit(targetPlayer)){
+            shootingPlayer.addPoint(1);
+            System.out.println(targetPlayer.getName() + " is hit!");
+            player1point.setText(Integer.toString(player1.getPoint()));
+            player2point.setText(Integer.toString(player2.getPoint()));
+        }
+
+        //status på point
+        pointStatus(player1);
+        pointStatus(player2);
+
+        //Skifter tur og tjekker for vinder
+        turnStatus();
 
     }
 
@@ -316,7 +327,7 @@ public class GameController implements Initializable {
         if (winnerFound){
             System.out.println(winner.getName() + " har vundet!");
             GameApplication.setStage("gameover-screen.fxml");
-        } else{
+        } else {
             //skifte tur
             if (player1HasTurn){
                 player1HasTurn = false;
@@ -353,6 +364,31 @@ public class GameController implements Initializable {
     public static boolean playerIsHit(Player player){
         double len = player.distanceToProjectile(proj);
         return len <= CANVAS_X/50;
+    }
+
+    //Andreas
+    public void turnStatus() throws IOException {
+        //tjekker om vinder er fundet
+        if (winnerFound) {
+            System.out.println(winner.getName() + " har vundet!");
+            GameApplication.setStage("gameover-screen.fxml");
+        } else {
+            //skifte tur
+            if (player1HasTurn){
+                player1HasTurn = false;
+            } else {
+                player1HasTurn = true;
+            }
+        }
+    }
+
+    //Anders
+    //Stiller indicatorene til at være
+    public void resetIndicators(){
+        indicatorp1.setLayoutX(BA.getLayoutX() + 20);
+        indicatorp1.setLayoutY(BA.getLayoutY() + 25);
+        indicatorp2.setLayoutX(BA.getLayoutX() + 20);
+        indicatorp2.setLayoutY(BA.getLayoutY() + 25);
     }
 
 
