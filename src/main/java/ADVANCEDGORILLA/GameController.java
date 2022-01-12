@@ -43,7 +43,7 @@ public class GameController implements Initializable {
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     private static double g = StartController.gravity;
-    public static boolean usemanualthrow = true; //Kommer senere
+    public static boolean usemanualthrow = false; //Kommer senere
 
     //variable fra game-view ift point og navne
     @FXML
