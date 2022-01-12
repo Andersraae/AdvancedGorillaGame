@@ -118,11 +118,6 @@ public class GameController implements Initializable {
         }
 
         throwvelocity /= 4; //Gør det nemmere at styre hastigheden
-        
-        visualangle.setText("Vinkel: " + round(displayangle));
-        visualvelocity.setText("Hastighed: " + round(throwvelocity));
-
-        System.out.println(Math.cos(Math.toRadians(displayangle)));
 
         if (player1HasTurn){
             indicatorp1.setEndX(xdiff/4);
@@ -146,9 +141,6 @@ public class GameController implements Initializable {
 
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
     }
-
-
-
 
 
     //Anders
@@ -233,7 +225,7 @@ public class GameController implements Initializable {
                 //Christian
                 //sætter pos af billede til projectile Pos
                 BA.setLayoutX(x); //TODO: Fiks det her igen så det passer igen
-                BA.setLayoutY(50-y);
+                BA.setLayoutY(400 - y);
 
                 double l = targetPlayer.distanceToProjectile(proj);
                 System.out.println("x: " + round(x) + " y: " + round(y) + " realtime: " + round(realtime) + " afstand: " + round(l));
@@ -241,6 +233,7 @@ public class GameController implements Initializable {
                 if (y < 0){ //Stopper animation når bananen rammer jorden
                     throwanimation.stop();
                     rotationBanan.stop();
+                    resetImage();
                 }
 
             }
@@ -269,7 +262,6 @@ public class GameController implements Initializable {
 
         //Skifter tur og tjekker for vinder
         turnStatus();
-        resetImage();
     }
 
     //Andreas
@@ -350,13 +342,14 @@ public class GameController implements Initializable {
 
     //Christian
     public void resetImage (){
-        if(player1HasTurn == true){
-            BA.setLayoutX(0);
-            BA.setLayoutY(360);
+        if(player1HasTurn){
+            BA.setLayoutX(100);
+            BA.setLayoutY(400-60);
         }else{
-            BA.setLayoutX(50);
-            BA.setLayoutY(360);
+            BA.setLayoutX(500);
+            BA.setLayoutY(400-60);
         }
+        resetIndicators();
     }
 
     //Andreas
@@ -405,6 +398,11 @@ public class GameController implements Initializable {
     //Anders
     //Stiller indicatorene til at være
     public void resetIndicators(){
+        indicatorp1.setEndY(0);
+        indicatorp1.setEndX(0);
+        indicatorp2.setEndY(0);
+        indicatorp2.setEndX(0);
+
         indicatorp1.setLayoutX(BA.getLayoutX() + 20);
         indicatorp1.setLayoutY(BA.getLayoutY() + 25);
         indicatorp2.setLayoutX(BA.getLayoutX() + 20);
