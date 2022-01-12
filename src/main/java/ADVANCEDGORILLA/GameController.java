@@ -2,6 +2,7 @@ package ADVANCEDGORILLA;
 import javafx.animation.Interpolator;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
@@ -38,6 +39,7 @@ public class GameController implements Initializable {
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     private static double g = StartController.gravity;
+    public static boolean usemanualthrow = true; //Kommer senere
 
     //variable fra game-view ift point og navne
     @FXML
@@ -47,12 +49,11 @@ public class GameController implements Initializable {
     public ImageView abe1;
     public ImageView BA;
     public ImageView abeKast;
-    @FXML
-    private Circle projectile;
 
     //Manuel kast
-    @FXML
-    private TextField angle, velocity;
+    public TextField angle, velocity;
+    public Label anglelabel, velocitylabel;
+    public Button throwbtn;
 
     //Visuel kast
     public Line indicatorp1, indicatorp2;
@@ -73,13 +74,13 @@ public class GameController implements Initializable {
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(false);
-        player2.setComputer(false);
+        player1.setComputer(true);
+        player2.setComputer(true);
 
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup();
+                Computer.setup(3); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -97,38 +98,58 @@ public class GameController implements Initializable {
         player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
         g = StartController.gravity;
         Computer.currentGuessNumber = 0;
+
+        if (usemanualthrow){
+            throwbtn.setOpacity(1);
+            anglelabel.setOpacity(1);
+            velocitylabel.setOpacity(1);
+            angle.setOpacity(1);
+            velocity.setOpacity(1);
+        } else {
+            visualvelocity.setOpacity(1);
+            visualangle.setOpacity(1);
+        }
+    }
+
+    //Anders
+    private void changeWind(){
+        Random randi = new Random();
+        winddirection = randi.nextDouble(360);
+        windforce = randi.nextInt(5);
     }
 
     //Anders
     //Til visuelt kast
     @FXML
     private void onMouseMove(MouseEvent event){
-        xdiff = event.getX() - BA.getLayoutX();
-        ydiff = BA.getLayoutY() - event.getY();
-        throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
-        throwangledeg = Math.toDegrees(Math.acos(xdiff/throwvelocity));
-        displayangle = throwangledeg;
+        if (!usemanualthrow){
+            xdiff = event.getX() - BA.getLayoutX();
+            ydiff = BA.getLayoutY() - event.getY();
+            throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
+            throwangledeg = Math.toDegrees(Math.acos(xdiff/throwvelocity));
+            displayangle = throwangledeg;
 
-        if (ydiff < 0){ //Hvis man peger musen under bananens position på y aksen
-            displayangle = - throwangledeg;
-        }
+            if (ydiff < 0){ //Hvis man peger musen under bananens position på y aksen
+                displayangle = - throwangledeg;
+            }
 
-        if (!player1HasTurn){
-            displayangle = 180 - throwangledeg;
-        }
+            if (!player1HasTurn){
+                displayangle = 180 - throwangledeg;
+            }
 
-        throwvelocity /= 4; //Gør det nemmere at styre hastigheden
+            throwvelocity /= 4; //Gør det nemmere at styre hastigheden
 
-        visualangle.setText("Vinkel: " + round(displayangle));
-        visualvelocity.setText("Hastighed: " + round(throwvelocity));
+            visualangle.setText("Vinkel: " + round(displayangle));
+            visualvelocity.setText("Hastighed: " + round(throwvelocity));
 
 
-        if (player1HasTurn){
-            indicatorp1.setEndX(xdiff/4);
-            indicatorp1.setEndY(-ydiff/4);
-        } else {
-            indicatorp2.setEndX(xdiff/4);
-            indicatorp2.setEndY(-ydiff/4);
+            if (player1HasTurn){
+                indicatorp1.setEndX(xdiff/4);
+                indicatorp1.setEndY(-ydiff/4);
+            } else {
+                indicatorp2.setEndX(xdiff/4);
+                indicatorp2.setEndY(-ydiff/4);
+            }
         }
     }
 
@@ -136,14 +157,16 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
-        //Tur
-        if(player1HasTurn){ //player 1 har tur
-            animateProjectile(player1, player2, throwangledeg, throwvelocity);
-        } else { //player 2 har tur
-            animateProjectile(player2, player1, throwangledeg, throwvelocity);
-        }
+        if (!usemanualthrow){
+            //Tur
+            if(player1HasTurn){ //player 1 har tur
+                animateProjectile(player1, player2, throwangledeg, throwvelocity);
+            } else { //player 2 har tur
+                animateProjectile(player2, player1, throwangledeg, throwvelocity);
+            }
 
-        System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
+            System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
+        }
     }
 
     //Anders
@@ -303,7 +326,7 @@ public class GameController implements Initializable {
     //Tager en Player og retunerer true når en spiller er ramt
     public static boolean playerIsHit(Player player){
         double len = player.distanceToProjectile(proj);
-        return len <= 1000;
+        return len <= CANVAS_X/50;
     }
 
     //Andreas

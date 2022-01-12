@@ -19,11 +19,11 @@
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" layoutY="312.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
 
       <!-- Indskriv manuelt værdier for kast -->
-      <Button layoutX="415.0" layoutY="30.0" mnemonicParsing="false" onAction="#kast" text="Kast" />
-      <TextField fx:id="angle" layoutX="226.0" layoutY="13.0" />
-      <TextField fx:id="velocity" layoutX="226.0" layoutY="42.0" />
-      <Label layoutX="159.0" layoutY="17.0" text="Vinkel" />
-      <Label layoutX="159.0" layoutY="46.0" text="Hastighed" />
+      <Button fx:id="throwbtn" layoutX="415.0" layoutY="30.0" mnemonicParsing="false" onAction="#kast" text="Kast" opacity="0" />
+      <TextField fx:id="angle" layoutX="226.0" layoutY="13.0" opacity="0" />
+      <TextField fx:id="velocity" layoutX="226.0" layoutY="42.0" opacity="0" />
+      <Label fx:id="anglelabel" layoutX="159.0" layoutY="17.0" text="Vinkel" opacity="0" />
+      <Label fx:id="velocitylabel" layoutX="159.0" layoutY="46.0" text="Hastighed" opacity="0" />
       <!-- Indskriv manuelt værdier for kast -->
 
       <!-- Projektil -->
@@ -88,8 +88,8 @@
       </Line>
       <!-- Linjer -->
       <!-- Tekst -->
-      <Label fx:id="visualangle" layoutX="278.0" layoutY="74.0" text="Vinkel: 0" />
-      <Label fx:id="visualvelocity" layoutX="267.0" layoutY="91.0" text="Hastighed: 0" />
+      <Label fx:id="visualangle" layoutX="278.0" layoutY="20.0" text="Vinkel: 0" opacity="0" />
+      <Label fx:id="visualvelocity" layoutX="267.0" layoutY="40.0" text="Hastighed: 0" opacity="0" />
       <!-- Tekst -->
       <!-- Banan -->
       <ImageView fx:id="BA" fitHeight="40.0" fitWidth="75.0" layoutX="75.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">

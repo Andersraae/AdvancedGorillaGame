@@ -5,14 +5,9 @@ public class Entity {
 
     private double x;
     private double y;
-    private double width;
-    private double height;
-
-    public Entity(double x, double y, double width, double height) {
+    public Entity(double x, double y) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
     }
 
     public double getX() {
