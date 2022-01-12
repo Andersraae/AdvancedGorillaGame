@@ -86,7 +86,7 @@ public class GameController implements Initializable {
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup(2); // 1-5
+                Computer.setup(3); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -264,6 +264,8 @@ public class GameController implements Initializable {
         BA.setY(projectile.getLayoutY()-290);
 
         //status på point
+        System.out.println();
+        System.out.println("v:" + Math.abs(VELOCITY) + " a:" + Math.abs(ANGLE_IN_DEGREES));
         pointStatus(player1);
         pointStatus(player2);
 
