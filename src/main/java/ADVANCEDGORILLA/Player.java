@@ -7,7 +7,6 @@ public class Player extends Entity{
     protected int point;
     protected boolean isComputer;
 
-
     public Player(int x, int y, String name){
         super(x,y);
         this.name = name;
@@ -27,11 +26,6 @@ public class Player extends Entity{
         return this.name;
     }
 
-    public void setName(String name){
-        this.name = name;
-
-    }
-
     public void addPoint(int n){
         this.point += n;
     }
@@ -40,7 +34,8 @@ public class Player extends Entity{
         return this.point;
     }
 
-    public double distanceToProjectile(Projectile proj){
-        return Math.abs(Math.sqrt(Math.pow(proj.getX()-this.getX(),2))+Math.pow(proj.getY()-this.getY(),2));
+    public double distanceToProjectile(Projectile proj){ // kan snart fjernes
+
+        return Math.abs(Math.sqrt(Math.pow(proj.getX()-this.getX(),2)+Math.pow(proj.getY()-this.getY(),2)));
     }
 }

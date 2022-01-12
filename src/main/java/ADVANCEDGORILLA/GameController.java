@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
-
+import java.util.concurrent.TimeUnit;
 
 public class GameController implements Initializable {
 
@@ -50,10 +50,7 @@ public class GameController implements Initializable {
 
     public boolean Executed = false;
     public Scene root;
-    public ImageView abe1;
-    public ImageView abe2;
-    public ImageView BA;
-    public ImageView abeKast;
+    public ImageView abe1, abe2, BA, abeKast;
     @FXML
     private Circle projectile;
 
@@ -110,7 +107,7 @@ public class GameController implements Initializable {
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
             try {
-                Computer.setup(3); // 1-5
+                Computer.setup(1); // 1-5
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -212,9 +209,9 @@ public class GameController implements Initializable {
         visualvelocity.setText("Hastighed: " + round(throwvelocity));
 
         indicator.getPoints().setAll(
-          0.0,0.0,
-          xdiff / 4 - 0.1 * xdiff , - ydiff / 4 - 0.1 * ydiff,
-          xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
+                0.0,0.0,
+                xdiff / 4 - 0.1 * xdiff , - ydiff / 4 - 0.1 * ydiff,
+                xdiff / 4 + 0.1 * xdiff , - ydiff / 4 + 0.1 * ydiff
         );
     }
 
@@ -242,27 +239,27 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-            
+
             double numangle, numvelocity;
 
             //Tur
             if(player1HasTurn){ //player 1 har tur
                 if(player1.isComputer()){
                     Guess guess = Computer.nextComputerMove();
-                    simulateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
+                    simulate(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
-                    simulateProjectile(player1, player2, numangle, numvelocity);
+                    simulate(player1, player2, numangle, numvelocity);
                 }
             } else { //player 2 har tur
                 if(player2.isComputer()){
                     Guess guess = Computer.nextComputerMove();
-                    simulateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
+                    simulate(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
-                    simulateProjectile(player2, player1, -numangle, -numvelocity);
+                    simulate(player2, player1, -numangle, -numvelocity);
                 }
             }
 
@@ -343,36 +340,14 @@ public class GameController implements Initializable {
 
     }
 
-    //Andreas
-    public void simulateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
-        double angle = Math.toRadians(ANGLE_IN_DEGREES);
-        double xVelocity = VELOCITY * Math.cos(angle);
-        double yVelocity = VELOCITY * Math.sin(angle);
-        double totalTime = - 2.0 * yVelocity / -g;
-        double timeIncrement = totalTime / totalSteps;
-        double xIncrement = xVelocity * timeIncrement;
-        double x = shootingPlayer.getX();
-        double y = shootingPlayer.getY();
-        double t = 0.0;
-        int stepCounter;
+    //bedre version af simulateProjectile
+    public void simulate(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
 
-        System.out.println("step\tx \t y \t time \t length");
-        System.out.println("0\t0.0\t\t0.0\t\t0.0");
-
-        for (stepCounter= 1; stepCounter <= totalSteps; stepCounter++) {
-            t += timeIncrement;
-            x += xIncrement;
-            y = yVelocity * t + 0.5 * -g * t * t;
-            proj.setX(x);
-            proj.setY(y);
-            projectile.setLayoutX(x);
-            projectile.setCenterY(y);
-
-            double l = targetPlayer.distanceToProjectile(proj);
-            System.out.println(stepCounter + "\t" + round(x) + "\t" + round(y) + "\t" + round(t) + "\t" + round(l));
-        }
-
-        if (playerIsHit(targetPlayer)){
+        //gæt
+        System.out.println();
+        Guess guess = new Guess((int) ANGLE_IN_DEGREES, VELOCITY);
+        boolean hit = Computer.playerIsHit(shootingPlayer,targetPlayer,guess);
+        if (hit){
             shootingPlayer.addPoint(1);
             System.out.println(targetPlayer.getName() + " is hit!");
             player1point.setText(Integer.toString(player1.getPoint()));
@@ -385,7 +360,6 @@ public class GameController implements Initializable {
         BA.setY(projectile.getLayoutY()-290);
 
         //status på point
-        System.out.println();
         System.out.println("v:" + Math.abs(VELOCITY) + " a:" + Math.abs(ANGLE_IN_DEGREES));
         pointStatus(player1);
         pointStatus(player2);
