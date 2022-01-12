@@ -69,15 +69,7 @@ public class GameController implements Initializable {
         namePlayer2.setText(player2.getName());
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
-
-        //Christian
-        /* kør kun startpos en gang!
-        if(!Executed) {
-            BA.setLayoutX(0);
-            BA.setLayoutY(360);
-            Executed = true;
-        }
-        */
+        resetImage();
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
@@ -155,6 +147,10 @@ public class GameController implements Initializable {
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
     }
 
+
+
+
+
     //Anders
     //Til kast knappen
     public void kast() throws IOException, InterruptedException {
@@ -192,6 +188,7 @@ public class GameController implements Initializable {
         } catch (Exception e){
             System.out.println(e);
         }
+        resetImage();
     }
 
     //Andreas (Udregningen)
@@ -235,8 +232,8 @@ public class GameController implements Initializable {
 
                 //Christian
                 //sætter pos af billede til projectile Pos
-                BA.setX(x); //TODO: Fiks det her igen så det passer igen
-                BA.setY(110 - y);
+                BA.setLayoutX(x); //TODO: Fiks det her igen så det passer igen
+                BA.setLayoutY(50-y);
 
                 double l = targetPlayer.distanceToProjectile(proj);
                 System.out.println("x: " + round(x) + " y: " + round(y) + " realtime: " + round(realtime) + " afstand: " + round(l));
@@ -272,7 +269,7 @@ public class GameController implements Initializable {
 
         //Skifter tur og tjekker for vinder
         turnStatus();
-
+        resetImage();
     }
 
     //Andreas
@@ -337,6 +334,29 @@ public class GameController implements Initializable {
             System.out.println(targetPlayer.getName() + " har tur!");
         }
 
+        if (winnerFound){
+            System.out.println(winner.getName() + " har vundet!");
+            GameApplication.setStage("gameover-screen.fxml");
+        } else{
+            //skifte tur
+            if (player1HasTurn){
+                player1HasTurn = false;
+            } else {
+                player1HasTurn = true;
+            }
+            System.out.println(targetPlayer.getName() + " har tur!");
+        }
+    }
+
+    //Christian
+    public void resetImage (){
+        if(player1HasTurn == true){
+            BA.setLayoutX(0);
+            BA.setLayoutY(360);
+        }else{
+            BA.setLayoutX(50);
+            BA.setLayoutY(360);
+        }
     }
 
     //Andreas
