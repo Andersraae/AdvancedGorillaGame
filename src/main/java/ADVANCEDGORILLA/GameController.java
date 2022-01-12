@@ -89,9 +89,8 @@ public class GameController implements Initializable {
         namePlayer2.setText(player2.getName());
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
-        resetImage();
-
         generateTerrain();
+        resetImage();
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
@@ -310,6 +309,7 @@ public class GameController implements Initializable {
             double x = shootingPlayer.getX();
             double y = shootingPlayer.getY();
             double realtime;
+            final double beginy = BA.getLayoutY();
 
             @Override
             public void handle(ActionEvent event) {
@@ -323,7 +323,7 @@ public class GameController implements Initializable {
                 //Christian
                 //sætter pos af billede til projectile Pos
                 BA.setLayoutX(x); //TODO: Fiks det her igen så det passer igen
-                BA.setLayoutY(400 - y);
+                BA.setLayoutY(beginy - y);
 
                 double l = targetPlayer.distanceToProjectile(proj);
                 System.out.println("x: " + round(x) + " y: " + round(y) + " realtime: " + round(realtime) + " afstand: " + round(l));
@@ -331,7 +331,22 @@ public class GameController implements Initializable {
                 if (y < 0){ //Stopper animation når bananen rammer jorden
                     throwanimation.stop();
                     rotationBanan.stop();
-                    resetImage();
+
+                    if (playerIsHit(targetPlayer)){
+                        shootingPlayer.addPoint(1);
+                    }
+
+                    //status på point
+                    pointStatus(player1);
+                    pointStatus(player2);
+
+                    //Skifter tur og tjekker for vinder. Skal være sidst (!!)
+                    try {
+                        turnStatus();
+                        resetImage();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
@@ -346,30 +361,16 @@ public class GameController implements Initializable {
             rotationBanan.setRate(-1);
             rotationBanan.play();
         }
-
-        if (playerIsHit(targetPlayer)){
-            shootingPlayer.addPoint(1);
-            System.out.println(targetPlayer.getName() + " is hit!");
-            player1point.setText(Integer.toString(player1.getPoint()));
-            player2point.setText(Integer.toString(player2.getPoint()));
-        }
-
-        //status på point
-        pointStatus(player1);
-        pointStatus(player2);
-
-        //Skifter tur og tjekker for vinder
-        turnStatus();
     }
 
     //Christian
     public void resetImage (){
         if(player1HasTurn){
-            BA.setLayoutX(100);
-            BA.setLayoutY(400-60);
+            BA.setLayoutX(abe1.getLayoutX() + abe1.getFitWidth());
+            BA.setLayoutY(abe1.getLayoutY());
         }else{
-            BA.setLayoutX(500);
-            BA.setLayoutY(400-60);
+            BA.setLayoutX(abe2.getLayoutX() - BA.getFitWidth());
+            BA.setLayoutY(abe2.getLayoutY());
         }
         resetIndicators();
     }
