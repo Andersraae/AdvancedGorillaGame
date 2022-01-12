@@ -101,8 +101,8 @@ public class GameController implements Initializable {
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(false);
-        player2.setComputer(false);
+        player1.setComputer(true);
+        player2.setComputer(true);
 
         //setup computer
         if(player1.isComputer() || player2.isComputer()){
