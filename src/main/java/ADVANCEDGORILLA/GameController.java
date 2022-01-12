@@ -119,6 +119,10 @@ public class GameController implements Initializable {
 
         throwvelocity /= 4; //Gør det nemmere at styre hastigheden
 
+        visualangle.setText("Vinkel: " + round(displayangle));
+        visualvelocity.setText("Hastighed: " + round(throwvelocity));
+
+
         if (player1HasTurn){
             indicatorp1.setEndX(xdiff/4);
             indicatorp1.setEndY(-ydiff/4);
@@ -142,7 +146,6 @@ public class GameController implements Initializable {
         System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
     }
 
-
     //Anders
     //Til kast knappen
     public void kast() throws IOException, InterruptedException {
@@ -156,20 +159,20 @@ public class GameController implements Initializable {
             if(player1HasTurn){ //player 1 har tur
                 if(player1.isComputer()){
                     Guess guess = Computer.nextComputerMove();
-                    simulateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
+                    animateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
-                    simulateProjectile(player1, player2, numangle, numvelocity);
+                    animateProjectile(player1, player2, numangle, numvelocity);
                 }
             } else { //player 2 har tur
                 if(player2.isComputer()){
                     Guess guess = Computer.nextComputerMove();
-                    simulateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
+                    animateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
-                    simulateProjectile(player2, player1, -numangle, -numvelocity);
+                    animateProjectile(player2, player1, -numangle, -numvelocity);
                 }
             }
 
@@ -264,82 +267,6 @@ public class GameController implements Initializable {
         turnStatus();
     }
 
-    //Andreas
-    public void simulateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
-        double angle = Math.toRadians(ANGLE_IN_DEGREES);
-        double xVelocity = VELOCITY * Math.cos(angle);
-        double yVelocity = VELOCITY * Math.sin(angle);
-        double totalTime = - 2.0 * yVelocity / -g;
-        double timeIncrement = totalTime / totalSteps;
-        double xIncrement = xVelocity * timeIncrement;
-        double x = shootingPlayer.getX();
-        double y = shootingPlayer.getY();
-        double t = 0.0;
-        int stepCounter;
-
-        System.out.println("step\tx \t y \t time \t length");
-        System.out.println("0\t0.0\t\t0.0\t\t0.0");
-
-        for (stepCounter= 1; stepCounter <= totalSteps; stepCounter++) {
-            t += timeIncrement;
-            x += xIncrement;
-            y = yVelocity * t + 0.5 * -g * t * t;
-            proj.setX(x);
-            proj.setY(y);
-            projectile.setLayoutX(x);
-            projectile.setCenterY(y);
-
-            double l = targetPlayer.distanceToProjectile(proj);
-            System.out.println(stepCounter + "\t" + round(x) + "\t" + round(y) + "\t" + round(t) + "\t" + round(l));
-        }
-
-
-        if (playerIsHit(targetPlayer)){
-            shootingPlayer.addPoint(1);
-            System.out.println(targetPlayer.getName() + " is hit!");
-            player1point.setText(Integer.toString(player1.getPoint()));
-            player2point.setText(Integer.toString(player2.getPoint()));
-        }
-
-        //Christian
-        //sætter pos af billede til projectile Pos
-        BA.setX(projectile.getLayoutX()-100);
-        BA.setY(projectile.getLayoutY()-290);
-
-
-
-        //status på point
-        pointStatus(player1);
-        pointStatus(player2);
-
-        //tjekker om vinder er fundet
-        if (winnerFound){
-            System.out.println(winner.getName() + " har vundet!");
-            GameApplication.setStage("gameover-screen.fxml");
-        } else {
-            //skifte tur
-            if (player1HasTurn){
-                player1HasTurn = false;
-            } else {
-                player1HasTurn = true;
-            }
-            System.out.println(targetPlayer.getName() + " har tur!");
-        }
-
-        if (winnerFound){
-            System.out.println(winner.getName() + " har vundet!");
-            GameApplication.setStage("gameover-screen.fxml");
-        } else{
-            //skifte tur
-            if (player1HasTurn){
-                player1HasTurn = false;
-            } else {
-                player1HasTurn = true;
-            }
-            System.out.println(targetPlayer.getName() + " har tur!");
-        }
-    }
-
     //Christian
     public void resetImage (){
         if(player1HasTurn){
@@ -376,7 +303,7 @@ public class GameController implements Initializable {
     //Tager en Player og retunerer true når en spiller er ramt
     public static boolean playerIsHit(Player player){
         double len = player.distanceToProjectile(proj);
-        return len <= CANVAS_X/50;
+        return len <= 1000;
     }
 
     //Andreas
@@ -409,9 +336,6 @@ public class GameController implements Initializable {
         indicatorp2.setLayoutY(BA.getLayoutY() + 25);
     }
 
-
-
-
 /*
     final Image[] deathAnimationImages = new Image[] {};
 
@@ -429,10 +353,6 @@ public void handle(ActionEvent event) {
         }));
         deathAnimation.setCycleCount(deathAnimationImages.length);
         deathAnimation.play();
-
-
 */
-
-
 
 }
