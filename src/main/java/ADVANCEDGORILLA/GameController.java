@@ -2,6 +2,9 @@ package ADVANCEDGORILLA;
 import javafx.animation.Interpolator;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.RotateTransition;
@@ -28,6 +31,7 @@ public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
     public static final int CANVAS_X = 600;
+    public static final int CANVAS_Y = 400;
     public static Projectile proj = new Projectile(0,0);
     private static int totalSteps = 20;
     private static Player winner = new Player(-1,-1,"null");
@@ -47,6 +51,7 @@ public class GameController implements Initializable {
     public boolean Executed = false;
     public Scene root;
     public ImageView abe1;
+    public ImageView abe2;
     public ImageView BA;
     public ImageView abeKast;
     @FXML
@@ -64,6 +69,20 @@ public class GameController implements Initializable {
     //Vind
     public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
 
+    //Terræn
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    private Rectangle player1Rect;
+    @FXML
+    private Rectangle player2Rect;
+    public int blockHeight = 16;
+    public int blockWidth = 72;
+    public int maxHeight = 8;
+    public int minHeight = 2;
+    public Color[] buildingColors = {Color.DARKTURQUOISE, Color.INDIANRED, Color.LIGHTGREY};
+    public Building[] buildings;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reset();
@@ -80,6 +99,8 @@ public class GameController implements Initializable {
             Executed = true;
         }
         */
+
+        generateTerrain();
 
         //Andreas
         //test - om en spiller er computer skal afgøres i startscreen
@@ -107,6 +128,64 @@ public class GameController implements Initializable {
         player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
         g = StartController.gravity;
         Computer.currentGuessNumber = 0;
+    }
+
+    // Generer bygninger
+    public void generateTerrain() {
+        Random r = new Random();
+
+        // Tegn bygninger
+        int arrLength = CANVAS_X / blockWidth;
+        if (CANVAS_X % blockWidth != 0) arrLength++;
+        buildings = new Building[arrLength];
+
+        for (int i = 0; (i * blockWidth) < CANVAS_X; i++) {
+            int height = r.nextInt(maxHeight - minHeight) + minHeight;
+            int color = r.nextInt(buildingColors.length);
+
+            for (int j = 0; j <= height; j++) {
+                Rectangle block = new Rectangle();
+                block.setLayoutX(i * blockWidth);
+                block.setLayoutY(CANVAS_Y - j * blockHeight);
+                block.setWidth(blockWidth);
+                block.setHeight(blockHeight);
+                block.setFill(buildingColors[color]);
+                System.out.println("block");
+                anchorPane.getChildren().add(block);
+
+                // Tegn vinduer
+                for (int k = 0; k < 6; k++) {
+                    Rectangle window = new Rectangle();
+                    window.setLayoutX(i * blockWidth + (blockWidth / 6) * k + (blockWidth / 6) / 3);
+                    window.setLayoutY(CANVAS_Y - j * blockHeight + (blockHeight / 4));
+                    window.setWidth(blockWidth / 6 / 3);
+                    window.setHeight(blockHeight / 2);
+                    if (r.nextInt(2) == 1) {
+                        window.setFill(Color.BEIGE);
+                    } else {
+                        window.setFill(Color.SLATEGRAY);
+                    }
+                    anchorPane.getChildren().add(window);
+                }
+            }
+            Building building = new Building(i * blockWidth, blockWidth, height * blockHeight);
+            buildings[i] = building;
+        }
+        // TODO: sæt spilleres og projektils position
+
+
+        abe1.setLayoutX(buildings[1].getX() + buildings[1].getWidth() / 2 - abe1.getFitWidth() / 2);
+        abe1.setLayoutY(CANVAS_Y - (buildings[1].getHeight() + abe1.getFitHeight()));
+        abe2.setLayoutX(buildings[7].getX() + buildings[7].getWidth() / 2 - abe2.getFitWidth() / 2);
+        abe2.setLayoutY(CANVAS_Y - (buildings[7].getHeight() + abe2.getFitHeight()));
+
+        player1.setX(abe1.getLayoutX() + abe1.getFitWidth() / 2);
+        player1.setY(abe1.getLayoutY() + abe1.getFitHeight() / 2);
+        player2.setX(abe2.getLayoutX() + abe2.getFitWidth() / 2);
+        player2.setY(abe2.getLayoutY() + abe2.getFitHeight() / 2);
+
+        proj.setX(player1.getX());
+        proj.setY(player1.getY());
     }
 
     //Anders
