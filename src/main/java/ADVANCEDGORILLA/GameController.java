@@ -30,19 +30,19 @@ import java.util.concurrent.TimeUnit;
 public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
-    public static final int CANVAS_X = 600;
-    public static final int CANVAS_Y = 400;
+    public static final int CANVAS_X = 600 ,CANVAS_Y = 400;
     public static Projectile proj = new Projectile(0,0);
-    private static int totalSteps = 20;
     private static Player winner = new Player(-1,-1,"null");
-    private static boolean winnerFound = false;
-    private static boolean player1HasTurn = true;
+    private static boolean winnerFound = false, player1HasTurn = true;
 
     //Variable fra startScreen
     private static int FirstTo = StartController.PlayingTo;
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     private static double g = StartController.gravity;
+
+    //AI
+    public static Computer computer1, computer2;
 
     //variable fra game-view ift point og navne
     @FXML
@@ -82,9 +82,21 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        reset();
+        //setup tur
+        player1HasTurn = true;
+        proj = new Projectile(0,0);
+        winner = new Player(-1,-1,"null");
+        winnerFound = false;
+        FirstTo = StartController.PlayingTo;
+        player1 = new Player(0, 0, StartController.namePlayer1);
+        player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
+        g = StartController.gravity;
+
+        //navne
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
+
+        //vind
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
 
@@ -97,34 +109,16 @@ public class GameController implements Initializable {
         }
         */
 
-        generateTerrain();
+        generateTerrain(); //tærræn
 
         //Andreas
-        //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(true);
-        player2.setComputer(true);
-
         //setup computer
-        if(player1.isComputer() || player2.isComputer()){
-            try {
-                Computer.setup(1); // 1-5
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void reset(){
-        //setup tur
-        player1HasTurn = true;
-        proj = new Projectile(0,0);
-        winner = new Player(-1,-1,"null");
-        winnerFound = false;
-        FirstTo = StartController.PlayingTo;
-        player1 = new Player(0, 0, StartController.namePlayer1);
-        player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-        g = StartController.gravity;
-        Computer.currentGuessNumber = 0;
+        computer1 = new Computer(player1,player2);
+        computer2 = new Computer(player2,player1);
+        player1.setComputer(StartController.player1AI > 0); // 0 = computer ikke aktiveret
+        player2.setComputer(StartController.player2AI > 0);
+        computer1.setup(StartController.player1AI); //hvis computer er slået fra, gør de to kald ikke noget
+        computer2.setup(StartController.player2AI);
     }
 
     // Generer bygninger
@@ -239,13 +233,11 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-
             double numangle, numvelocity;
-
             //Tur
             if(player1HasTurn){ //player 1 har tur
                 if(player1.isComputer()){
-                    Guess guess = Computer.nextComputerMove();
+                    Guess guess = computer1.getNextMove();
                     simulate(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
@@ -254,7 +246,7 @@ public class GameController implements Initializable {
                 }
             } else { //player 2 har tur
                 if(player2.isComputer()){
-                    Guess guess = Computer.nextComputerMove();
+                    Guess guess = computer2.getNextMove();
                     simulate(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
@@ -360,7 +352,7 @@ public class GameController implements Initializable {
         BA.setY(projectile.getLayoutY()-290);
 
         //status på point
-        System.out.println("v:" + Math.abs(VELOCITY) + " a:" + Math.abs(ANGLE_IN_DEGREES));
+        //System.out.println("v:" + Math.abs(VELOCITY) + " a:" + Math.abs(ANGLE_IN_DEGREES));
         pointStatus(player1);
         pointStatus(player2);
 
@@ -398,13 +390,6 @@ public class GameController implements Initializable {
         return String.format("%.2f",a);
     }
 
-    //Andreas
-    //Kaldes efter et kast er sket
-    //Tager en Player og retunerer true når en spiller er ramt
-    public static boolean playerIsHit(Player player){
-        double len = player.distanceToProjectile(proj);
-        return len <= CANVAS_X/50;
-    }
 /*
     final Image[] deathAnimationImages = new Image[] {};
 

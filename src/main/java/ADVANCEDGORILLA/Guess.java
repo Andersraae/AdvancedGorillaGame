@@ -20,4 +20,15 @@ public class Guess {
     public String toString(){
         return "a:" + this.angle + " v:"+ this.velocity;
     }
+
+    public void setAngle(int a){
+        this.angle = a;
+    }
+
+    public void setVelocity(double v){
+        this.velocity = v;
+    }
+
+
+
 }

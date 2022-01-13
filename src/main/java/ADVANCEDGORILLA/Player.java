@@ -35,7 +35,6 @@ public class Player extends Entity{
     }
 
     public double distanceToProjectile(Projectile proj){ // kan snart fjernes
-
         return Math.abs(Math.sqrt(Math.pow(proj.getX()-this.getX(),2)+Math.pow(proj.getY()-this.getY(),2)));
     }
 }
