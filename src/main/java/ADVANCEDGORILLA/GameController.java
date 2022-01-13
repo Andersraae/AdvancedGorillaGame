@@ -25,46 +25,43 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
-
+import java.util.concurrent.TimeUnit;
 
 public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
-    public static final int CANVAS_X = 600;
-    public static final int CANVAS_Y = 400;
+    public static final int CANVAS_X = 600 ,CANVAS_Y = 400;
     public static Projectile proj = new Projectile(0,0);
-    private static int totalSteps = 20;
     private static Player winner = new Player(-1,-1,"null");
-    private static boolean winnerFound = false;
-    private static boolean player1HasTurn = true;
+    private static boolean winnerFound = false, player1HasTurn = true;
 
     //Variable fra startScreen
     private static int FirstTo = StartController.PlayingTo;
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     private static double g = StartController.gravity;
-    public static boolean usemanualthrow = false; //Kommer senere
+
+    //AI
+    public static Computer computer1, computer2;
 
     //variable fra game-view ift point og navne
     @FXML
     public Label namePlayer1, namePlayer2,player1point, player2point;
 
     public boolean Executed = false;
-    public ImageView abe1;
-    public ImageView abe2;
-    public ImageView BA;
-    public ImageView abeKast;
+    public ImageView abe1, abe2, BA, abeKast;
 
     //Manuel kast
     public TextField angle, velocity;
     public Label anglelabel, velocitylabel;
     public Button throwbtn;
+    private static boolean manuelKast = StartController.manuelKast;
 
     //Visuel kast
     public Line indicatorp1, indicatorp2;
     public Label visualangle, visualvelocity;
     public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
-    public boolean hasthrown = false; //Begrænser brugeren til et kast
+    public boolean hasthrown = false; //Begrænser
 
     //Vind
     public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
@@ -85,9 +82,21 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        reset();
+        //setup tur
+        player1HasTurn = true;
+        proj = new Projectile(0,0);
+        winner = new Player(-1,-1,"null");
+        winnerFound = false;
+        FirstTo = StartController.PlayingTo;
+        player1 = new Player(0, 0, StartController.namePlayer1);
+        player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
+        g = StartController.gravity;
+
+        //navne
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
+
+        //vind
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
 
@@ -101,28 +110,14 @@ public class GameController implements Initializable {
         player2.setComputer(false);
 
         //setup computer
-        if(player1.isComputer() || player2.isComputer()){
-            try {
-                Computer.setup(3); // 1-5
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+        computer1 = new Computer(player1,player2);
+        computer2 = new Computer(player2,player1);
+        player1.setComputer(StartController.player1AI > 0); // 0 = computer ikke aktiveret
+        player2.setComputer(StartController.player2AI > 0);
+        computer1.setup(StartController.player1AI); //hvis computer er slået fra, gør de to kald ikke noget
+        computer2.setup(StartController.player2AI);
 
-    public void reset(){
-        //setup tur
-        player1HasTurn = true;
-        proj = new Projectile(0,0);
-        winner = new Player(-1,-1,"null");
-        winnerFound = false;
-        FirstTo = StartController.PlayingTo;
-        player1 = new Player(0, 0, StartController.namePlayer1);
-        player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-        g = StartController.gravity;
-        Computer.currentGuessNumber = 0;
-
-        if (usemanualthrow){
+        if (manuelKast){
             throwbtn.setOpacity(1);
             anglelabel.setOpacity(1);
             velocitylabel.setOpacity(1);
@@ -200,7 +195,7 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseMove(MouseEvent event){
-        if (!usemanualthrow){
+        if (!manuelKast){
             xdiff = event.getX() - BA.getLayoutX();
             ydiff = BA.getLayoutY() - event.getY();
             throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
@@ -235,7 +230,7 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
-        if (!usemanualthrow){
+        if (!manuelKast){
             //Tur
             if(player1HasTurn){ //player 1 har tur
                 animateProjectile(player1, player2, throwangledeg, throwvelocity);
@@ -251,14 +246,12 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
         try {
-
             double numangle, numvelocity;
-
             //Tur
             if(player1HasTurn){ //player 1 har tur
                 if(player1.isComputer()){
-                    Guess guess = Computer.nextComputerMove();
-                    animateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
+                    Guess guess = computer1.getNextMove();
+                    simulate(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
@@ -266,8 +259,8 @@ public class GameController implements Initializable {
                 }
             } else { //player 2 har tur
                 if(player2.isComputer()){
-                    Guess guess = Computer.nextComputerMove();
-                    animateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
+                    Guess guess = computer2.getNextMove();
+                    simulate(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
@@ -394,7 +387,6 @@ public class GameController implements Initializable {
             BA.setLayoutX(player2.getX() - BA.getFitWidth() / 2);
             BA.setLayoutY(CANVAS_Y - player2.getY() - BA.getFitHeight() / 2);
         }
-        resetIndicators();
     }
 
     //Andreas
@@ -472,4 +464,44 @@ public void handle(ActionEvent event) {
         deathAnimation.setCycleCount(deathAnimationImages.length);
         deathAnimation.play();
 */
+/*
+    //bedre version af simulateProjectile
+    public void simulate(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
+
+        //gæt
+        System.out.println();
+        Guess guess = new Guess((int) ANGLE_IN_DEGREES, VELOCITY);
+        boolean hit = Computer.playerIsHit(shootingPlayer,targetPlayer,guess);
+        if (hit){
+            shootingPlayer.addPoint(1);
+            System.out.println(targetPlayer.getName() + " is hit!");
+            player1point.setText(Integer.toString(player1.getPoint()));
+            player2point.setText(Integer.toString(player2.getPoint()));
+        }
+
+        //Christian
+        //sætter pos af billede til projectile Pos
+        BA.setX(projectile.getLayoutX()-100);
+        BA.setY(projectile.getLayoutY()-290);
+
+        //status på point
+        //System.out.println("v:" + Math.abs(VELOCITY) + " a:" + Math.abs(ANGLE_IN_DEGREES));
+        pointStatus(player1);
+        pointStatus(player2);
+
+        //tjekker om vinder er fundet
+        if (winnerFound){
+            System.out.println(winner.getName() + " har vundet!");
+            GameApplication.setStage("gameover-screen.fxml");
+        } else{
+            //skifte tur
+            if (player1HasTurn){
+                player1HasTurn = false;
+            } else {
+                player1HasTurn = true;
+            }
+            System.out.println(targetPlayer.getName() + " har tur!");
+        }
+    }
+    */
 }
