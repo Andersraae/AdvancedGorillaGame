@@ -64,6 +64,7 @@ public class GameController implements Initializable {
     public Line indicatorp1, indicatorp2;
     public Label visualangle, visualvelocity;
     public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
+    public boolean hasthrown = false; //Begrænser brugeren til et kast
 
     //Vind
     public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
@@ -306,9 +307,6 @@ public class GameController implements Initializable {
         System.out.println("spiller pos: " + shootingPlayer);
         KeyFrame bananakeyrframe = new KeyFrame(Duration.millis(updatemillis), new EventHandler<ActionEvent>() {
             double angle = Math.toRadians(ANGLE_IN_DEGREES);
-            //double xVelocity = VELOCITY * Math.cos(angle);
-            //double yVelocity = VELOCITY * Math.sin(angle);
-            //double totalTime = - updatemillis * 3.17 * yVelocity / -g; //Tilpasset godt og vel til funktionen med de 3.17
             double x = shootingPlayer.getX() - 40;
             double y = shootingPlayer.getY() - 10;
             double startX = shootingPlayer.getX();
@@ -365,6 +363,7 @@ public class GameController implements Initializable {
                     try {
                         turnStatus();
                         resetImage();
+                        hasthrown = false;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -373,14 +372,16 @@ public class GameController implements Initializable {
             }
         });
         throwanimation.getKeyFrames().add(bananakeyrframe);
-        throwanimation.play();
-
-        if (player1HasTurn) {
-            rotationBanan.setRate(1);
-            rotationBanan.play();
-        } else {
-            rotationBanan.setRate(-1);
-            rotationBanan.play();
+        if (!hasthrown){
+            throwanimation.play();
+            hasthrown = true;
+            if (player1HasTurn) {
+                rotationBanan.setRate(1);
+                rotationBanan.play();
+            } else {
+                rotationBanan.setRate(-1);
+                rotationBanan.play();
+            }
         }
     }
 
