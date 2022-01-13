@@ -72,9 +72,9 @@ public class GameController implements Initializable {
     @FXML
     private AnchorPane anchorPane;
     @FXML
-    private Rectangle player1Rect;
+    private Rectangle player1Hitbox;
     @FXML
-    private Rectangle player2Rect;
+    private Rectangle player2Hitbox;
     public int blockHeight = 16;
     public int blockWidth = 72;
     public int maxHeight = 8;
@@ -89,7 +89,9 @@ public class GameController implements Initializable {
         namePlayer2.setText(player2.getName());
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
+
         generateTerrain();
+
         resetImage();
 
         //Andreas
@@ -131,19 +133,20 @@ public class GameController implements Initializable {
         }
     }
 
+    // Markus
     // Generer bygninger
     public void generateTerrain() {
         Random r = new Random();
-
-        // Tegn bygninger
         int arrLength = CANVAS_X / blockWidth;
         if (CANVAS_X % blockWidth != 0) arrLength++;
         buildings = new Building[arrLength];
 
+        // Tegn bygninger
         for (int i = 0; (i * blockWidth) < CANVAS_X; i++) {
             int height = r.nextInt(maxHeight - minHeight) + minHeight;
             int color = r.nextInt(buildingColors.length);
 
+            // Tegn en bygning
             for (int j = 0; j <= height; j++) {
                 Rectangle block = new Rectangle();
                 block.setLayoutX(i * blockWidth);
@@ -151,7 +154,6 @@ public class GameController implements Initializable {
                 block.setWidth(blockWidth);
                 block.setHeight(blockHeight);
                 block.setFill(buildingColors[color]);
-                System.out.println("block");
                 anchorPane.getChildren().add(block);
 
                 // Tegn vinduer
@@ -169,24 +171,28 @@ public class GameController implements Initializable {
                     anchorPane.getChildren().add(window);
                 }
             }
+            // Opret array med bygninger
             Building building = new Building(i * blockWidth, blockWidth, height * blockHeight);
             buildings[i] = building;
         }
-        // TODO: sæt spilleres og projektils position
-
-
+        // TODO: sæt spilleres og projektils position rigtigt
         abe1.setLayoutX(buildings[1].getX() + buildings[1].getWidth() / 2 - abe1.getFitWidth() / 2);
         abe1.setLayoutY(CANVAS_Y - (buildings[1].getHeight() + abe1.getFitHeight()));
         abe2.setLayoutX(buildings[7].getX() + buildings[7].getWidth() / 2 - abe2.getFitWidth() / 2);
         abe2.setLayoutY(CANVAS_Y - (buildings[7].getHeight() + abe2.getFitHeight()));
 
         player1.setX(abe1.getLayoutX() + abe1.getFitWidth() / 2);
-        player1.setY(abe1.getLayoutY() + abe1.getFitHeight() / 2);
+        player1.setY(buildings[1].getHeight() + abe1.getFitHeight() / 2);
         player2.setX(abe2.getLayoutX() + abe2.getFitWidth() / 2);
-        player2.setY(abe2.getLayoutY() + abe2.getFitHeight() / 2);
+        player2.setY(buildings[7].getHeight() + abe2.getFitHeight() / 2);
 
         proj.setX(player1.getX());
         proj.setY(player1.getY());
+
+        BA.setLayoutX(player1.getX());
+        BA.setLayoutY(CANVAS_Y - player1.getY());
+        System.out.println(BA.getLayoutX());
+        System.out.println(BA.getLayoutY());
     }
 
     //Anders
@@ -231,12 +237,12 @@ public class GameController implements Initializable {
         if (!usemanualthrow){
             //Tur
             if(player1HasTurn){ //player 1 har tur
-                animateProjectile(player1, player2, throwangledeg, throwvelocity);
+                animateProjectile(player1, player2, throwangledeg, throwvelocity); // animateProjectile(player1, player2, throwangledeg, throwvelocity);
             } else { //player 2 har tur
-                animateProjectile(player2, player1, throwangledeg, throwvelocity);
+                animateProjectile(player2, player1, throwangledeg, throwvelocity); // animateProjectile(player2, player1, throwangledeg, throwvelocity);
             }
 
-            System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
+            // System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
         }
     }
 
@@ -298,43 +304,58 @@ public class GameController implements Initializable {
         //TODO: Pas metoden til, så bananen ikke bare starter i 0,0
         Timeline throwanimation = new Timeline();
         throwanimation.setCycleCount(Timeline.INDEFINITE);
-        int updatemillis = 10;
+        int updatemillis = 20;
+        System.out.println("spiller pos: " + shootingPlayer);
         KeyFrame bananakeyrframe = new KeyFrame(Duration.millis(updatemillis), new EventHandler<ActionEvent>() {
             double angle = Math.toRadians(ANGLE_IN_DEGREES);
-            double xVelocity = VELOCITY * Math.cos(angle);
-            double yVelocity = VELOCITY * Math.sin(angle);
-            double totalTime = - updatemillis * 3.17 * yVelocity / -g; //Tilpasset godt og vel til funktionen med de 3.17
-            double timeIncrement = totalTime / 1000;
-            double xIncrement = xVelocity * timeIncrement;
-            double x = shootingPlayer.getX();
-            double y = shootingPlayer.getY();
+            //double xVelocity = VELOCITY * Math.cos(angle);
+            //double yVelocity = VELOCITY * Math.sin(angle);
+            //double totalTime = - updatemillis * 3.17 * yVelocity / -g; //Tilpasset godt og vel til funktionen med de 3.17
+            double x = shootingPlayer.getX() - 40;
+            double y = shootingPlayer.getY() - 10;
+            double startX = shootingPlayer.getX();
+            double startY = shootingPlayer.getY() - 10;
             double realtime;
-            final double beginy = BA.getLayoutY();
+            boolean buildingHit = false;
+            boolean playerHit = false;
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += rotationBanan.getCurrentTime().toSeconds();
+                realtime += throwanimation.getCurrentTime().toSeconds();
+                x = startX + VELOCITY * realtime * Math.cos(angle);
+                y = startY + VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime;
 
-                x += xIncrement;
-                y = yVelocity * realtime + 0.5 * -g * realtime * realtime;
                 proj.setX(x);
                 proj.setY(y);
 
                 //Christian
                 //sætter pos af billede til projectile Pos
-                BA.setLayoutX(x); //TODO: Fiks det her igen så det passer igen
-                BA.setLayoutY(beginy - y);
+                BA.setLayoutX(x - BA.getFitWidth() / 2); // Ændret så center af så proj's koordinater er centrum af billede
+                BA.setLayoutY(CANVAS_Y - y - BA.getFitHeight() / 2); // Ændret så center af så proj's koordinater er centrum af billede
 
-                double l = targetPlayer.distanceToProjectile(proj);
-                System.out.println("x: " + round(x) + " y: " + round(y) + " realtime: " + round(realtime) + " afstand: " + round(l));
-
-                if (y < 0){ //Stopper animation når bananen rammer jorden
+                // Markus
+                // Anden version af kollision med spiller
+                if ((player1HasTurn && playerIsHit(abe2)) || (!player1HasTurn && playerIsHit(abe1))) {
+                    playerHit = true;
+                    System.out.println("player hit");
+                } else {
+                    // Kollision med bygning
+                    for (int i = 0; i < buildings.length; i++) {
+                        if (buildings[i].collision(proj)) {
+                            buildingHit = true;
+                            System.out.println("Ramt bygning " + i);
+                            rotationBanan.stop();
+                            throwanimation.stop();
+                        }
+                    }
+                }
+                // Checker om banan har ramt noget eller er uden for vinduet (banan kan godt være over vinduet)
+                if (y < 0 || x > CANVAS_X || x < 0 || playerHit || buildingHit){
                     throwanimation.stop();
                     rotationBanan.stop();
 
-                    if (playerIsHit(targetPlayer)){
-                        shootingPlayer.addPoint(1);
-                    }
+                    // Check om spiller blev ramt
+                    if (playerHit) shootingPlayer.addPoint(1);
 
                     //status på point
                     pointStatus(player1);
@@ -366,11 +387,11 @@ public class GameController implements Initializable {
     //Christian
     public void resetImage (){
         if(player1HasTurn){
-            BA.setLayoutX(abe1.getLayoutX() + abe1.getFitWidth());
-            BA.setLayoutY(abe1.getLayoutY());
+            BA.setLayoutX(player1.getX() - BA.getFitWidth() / 2);
+            BA.setLayoutY(CANVAS_Y - player1.getY() - BA.getFitHeight() / 2);
         }else{
-            BA.setLayoutX(abe2.getLayoutX() - BA.getFitWidth());
-            BA.setLayoutY(abe2.getLayoutY());
+            BA.setLayoutX(player2.getX() - BA.getFitWidth() / 2);
+            BA.setLayoutY(CANVAS_Y - player2.getY() - BA.getFitHeight() / 2);
         }
         resetIndicators();
     }
@@ -395,11 +416,15 @@ public class GameController implements Initializable {
     }
 
     //Andreas
-    //Kaldes efter et kast er sket
-    //Tager en Player og retunerer true når en spiller er ramt
-    public static boolean playerIsHit(Player player){
-        double len = player.distanceToProjectile(proj);
-        return len <= CANVAS_X/50;
+    // Modificeret playerIsHit
+    public static boolean playerIsHit(ImageView abe){
+        double bananX = proj.getX();
+        double bananY = proj.getY();
+        // Checker om banans centrum rammer aben
+        if (bananX > abe.getBoundsInParent().getMinX() && bananX < abe.getBoundsInParent().getMaxX() && bananY < (CANVAS_Y - abe.getBoundsInParent().getMinY()) && bananY > (CANVAS_Y - abe.getBoundsInParent().getMaxY())) {
+            return true;
+        }
+        return false;
     }
 
     //Andreas
@@ -410,11 +435,7 @@ public class GameController implements Initializable {
             GameApplication.setStage("gameover-screen.fxml");
         } else {
             //skifte tur
-            if (player1HasTurn){
-                player1HasTurn = false;
-            } else {
-                player1HasTurn = true;
-            }
+            player1HasTurn = !player1HasTurn;
         }
     }
 
