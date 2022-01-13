@@ -17,6 +17,11 @@ public class StartController implements Initializable {
     @FXML
     private TextField TextNamePlayer1,TextNamePlayer2,TextPlayingTo,TextGravity;
 
+    //manuel kast
+    @FXML
+    private CheckBox CheckBoxManuelKast;
+    public static boolean manuelKast;
+
     //AI
     @FXML
     private ComboBox ComboBoxPlayer1AI, ComboBoxPlayer2AI;
@@ -34,7 +39,6 @@ public class StartController implements Initializable {
             //Hverken antal runder eller gravity må være negativ
             if (PlayingTo > 0 && gravity > 0){
                 GameApplication.setStage("game-view.fxml");
-
             }
 
         } catch (Exception e){
@@ -84,5 +88,8 @@ public class StartController implements Initializable {
         } else {
             player2AI = (int) ComboBoxPlayer2AI.getValue();
         }
+
+        manuelKast = CheckBoxManuelKast.isSelected();
+
     }
 }

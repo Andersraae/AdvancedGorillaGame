@@ -57,6 +57,7 @@ public class GameController implements Initializable {
     //Manuel kast
     @FXML
     private TextField angle, velocity;
+    private static boolean manuelKast = StartController.manuelKast;
 
     //Visuel kast
     public Polygon indicator;
