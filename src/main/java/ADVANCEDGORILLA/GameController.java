@@ -104,11 +104,6 @@ public class GameController implements Initializable {
 
         resetImage();
 
-        //Andreas
-        //test - om en spiller er computer skal afgøres i startscreen
-        player1.setComputer(false);
-        player2.setComputer(false);
-
         //setup computer
         computer1 = new Computer(player1,player2);
         computer2 = new Computer(player2,player1);
@@ -212,8 +207,10 @@ public class GameController implements Initializable {
 
             throwvelocity /= 4; //Gør det nemmere at styre hastigheden
 
-            visualangle.setText("Vinkel: " + round(displayangle));
-            visualvelocity.setText("Hastighed: " + round(throwvelocity));
+            if (!hasthrown){
+                visualangle.setText("Vinkel: " + round(displayangle));
+                visualvelocity.setText("Hastighed: " + round(throwvelocity));
+            }
 
 
             if (player1HasTurn){
@@ -231,11 +228,22 @@ public class GameController implements Initializable {
     @FXML
     private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
         if (!manuelKast){
+
             //Tur
             if(player1HasTurn){ //player 1 har tur
-                animateProjectile(player1, player2, throwangledeg, throwvelocity);
+                if(player1.isComputer()){
+                    Guess guess = computer1.getNextMove();
+                    animateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
+                } else {
+                    animateProjectile(player1, player2, displayangle, throwvelocity);
+                }
             } else { //player 2 har tur
-                animateProjectile(player2, player1, throwangledeg, throwvelocity);
+                if(player2.isComputer()){
+                    Guess guess = computer2.getNextMove();
+                    animateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
+                } else {
+                    animateProjectile(player2, player1, -displayangle, -throwvelocity);
+                }
             }
         }
     }
@@ -251,7 +259,7 @@ public class GameController implements Initializable {
             if(player1HasTurn){ //player 1 har tur
                 if(player1.isComputer()){
                     Guess guess = computer1.getNextMove();
-                    simulate(player1, player2, guess.getAngle(), guess.getVelocity());
+                    animateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
@@ -260,7 +268,7 @@ public class GameController implements Initializable {
             } else { //player 2 har tur
                 if(player2.isComputer()){
                     Guess guess = computer2.getNextMove();
-                    simulate(player2, player1, -guess.getAngle(), -guess.getVelocity());
+                    animateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
                 } else {
                     numangle = Double.parseDouble(angle.getText());
                     numvelocity = Double.parseDouble(velocity.getText());
@@ -272,10 +280,10 @@ public class GameController implements Initializable {
             angle.clear();
             velocity.clear();
 
+            resetImage();
         } catch (Exception e){
             System.out.println(e);
         }
-        resetImage();
     }
 
     //Andreas (Udregningen)
@@ -367,6 +375,9 @@ public class GameController implements Initializable {
         throwanimation.getKeyFrames().add(bananakeyrframe);
         if (!hasthrown){
             throwanimation.play();
+            indicatorp1.setOpacity(0);
+            indicatorp2.setOpacity(0);
+
             hasthrown = true;
             if (player1HasTurn) {
                 rotationBanan.setRate(1);
@@ -375,17 +386,6 @@ public class GameController implements Initializable {
                 rotationBanan.setRate(-1);
                 rotationBanan.play();
             }
-        }
-    }
-
-    //Christian
-    public void resetImage (){
-        if(player1HasTurn){
-            BA.setLayoutX(player1.getX() - BA.getFitWidth() / 2);
-            BA.setLayoutY(CANVAS_Y - player1.getY() - BA.getFitHeight() / 2);
-        }else{
-            BA.setLayoutX(player2.getX() - BA.getFitWidth() / 2);
-            BA.setLayoutY(CANVAS_Y - player2.getY() - BA.getFitHeight() / 2);
         }
     }
 
@@ -420,6 +420,7 @@ public class GameController implements Initializable {
         return false;
     }
 
+
     //Andreas
     public void turnStatus() throws IOException {
         //tjekker om vinder er fundet
@@ -432,9 +433,28 @@ public class GameController implements Initializable {
         }
     }
 
+    //Christian
+    public void resetImage (){
+        if(player1HasTurn){
+            BA.setLayoutX(player1.getX() - BA.getFitWidth() / 2);
+            BA.setLayoutY(CANVAS_Y - player1.getY() - BA.getFitHeight() / 2);
+        }else{
+            BA.setLayoutX(player2.getX() - BA.getFitWidth() / 2);
+            BA.setLayoutY(CANVAS_Y - player2.getY() - BA.getFitHeight() / 2);
+        }
+        resetIndicators();
+    }
+
     //Anders
     //Stiller indicatorene til at være
     public void resetIndicators(){
+
+        if (player1HasTurn){
+            indicatorp1.setOpacity(1);
+        } else {
+            indicatorp2.setOpacity(1);
+        }
+
         indicatorp1.setEndY(0);
         indicatorp1.setEndX(0);
         indicatorp2.setEndY(0);
@@ -464,6 +484,7 @@ public void handle(ActionEvent event) {
         deathAnimation.setCycleCount(deathAnimationImages.length);
         deathAnimation.play();
 */
+
 /*
     //bedre version af simulateProjectile
     public void simulate(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
