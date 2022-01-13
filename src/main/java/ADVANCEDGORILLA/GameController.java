@@ -237,12 +237,10 @@ public class GameController implements Initializable {
         if (!usemanualthrow){
             //Tur
             if(player1HasTurn){ //player 1 har tur
-                animateProjectile(player1, player2, throwangledeg, throwvelocity); // animateProjectile(player1, player2, throwangledeg, throwvelocity);
+                animateProjectile(player1, player2, throwangledeg, throwvelocity);
             } else { //player 2 har tur
-                animateProjectile(player2, player1, throwangledeg, throwvelocity); // animateProjectile(player2, player1, throwangledeg, throwvelocity);
+                animateProjectile(player2, player1, throwangledeg, throwvelocity);
             }
-
-            // System.out.println("xdiff: " + xdiff + " ydiff: " + ydiff + " power: " + throwvelocity + " angle: " + throwangledeg); //Test
         }
     }
 
@@ -356,6 +354,8 @@ public class GameController implements Initializable {
 
                     // Check om spiller blev ramt
                     if (playerHit) shootingPlayer.addPoint(1);
+                    player1point.setText(Integer.toString(player1.getPoint()));
+                    player2point.setText(Integer.toString(player2.getPoint()));
 
                     //status på point
                     pointStatus(player1);
