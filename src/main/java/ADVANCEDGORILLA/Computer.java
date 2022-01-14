@@ -83,7 +83,6 @@ public class Computer{
         Random random = new Random();
         int currentGuess = 1;
 
-
         //generate random correct guess
         Guess correct;
         int angleInDegrees = random.nextInt(highestAngle - this.lowAngle) / 2 * 2 + this.lowAngle; //temporary

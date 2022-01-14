@@ -61,7 +61,7 @@ public class GameController implements Initializable {
     public boolean hasthrown = false; //Begrænser
 
     //Vind
-    public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
+    public static double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
     public Label visualwinddir,visualwindforce;
 
     //Terræn
@@ -324,8 +324,15 @@ public class GameController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 realtime += throwanimation.getCurrentTime().toSeconds() * 7; // kan ganges med konstant for at gøre kast hurtigere
-                x = startX + VELOCITY * realtime * Math.cos(angle) - realtime * windforce * Math.cos(Math.toRadians(winddirection));
-                y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime) - (realtime * windforce * Math.sin(Math.toRadians(winddirection)));
+
+                if(shootingPlayer.isComputer()){
+                    x = startX + VELOCITY * realtime * Math.cos(angle);
+                    y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime);
+
+                } else{
+                    x = startX + VELOCITY * realtime * Math.cos(angle) - realtime * windforce * Math.cos(Math.toRadians(winddirection));
+                    y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime) - (realtime * windforce * Math.sin(Math.toRadians(winddirection)));
+                }
 
                 proj.setX(x);
                 proj.setY(y);
