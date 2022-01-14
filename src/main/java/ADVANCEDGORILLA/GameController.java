@@ -316,9 +316,9 @@ public class GameController implements Initializable {
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += throwanimation.getCurrentTime().toSeconds(); // kan ganges med konstant for at gøre kast hurtigere
-                x = startX + VELOCITY * realtime * Math.cos(angle);
-                y = startY + VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime;
+                realtime += throwanimation.getCurrentTime().toSeconds() * 7; // kan ganges med konstant for at gøre kast hurtigere
+                x = startX + VELOCITY * realtime * Math.cos(angle) - realtime * windforce * Math.cos(Math.toRadians(winddirection));
+                y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime) - (realtime * windforce * Math.sin(Math.toRadians(winddirection)));
 
                 proj.setX(x);
                 proj.setY(y);

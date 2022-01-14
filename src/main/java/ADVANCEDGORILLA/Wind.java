@@ -10,7 +10,7 @@ public class Wind {
     private static Random randi = new Random();
 
     public static double changeWindForce(){
-        return randi.nextInt(5);
+        return randi.nextInt(10);
     }
 
     public static double changeWindDirection(){
