@@ -175,24 +175,22 @@ public class GameController implements Initializable {
             Building building = new Building(i * blockWidth, blockWidth, height * blockHeight);
             buildings[i] = building;
         }
-        // TODO: sæt spilleres og projektils position rigtigt
+        // Sætter positioner af spiller sprites
         abe1.setLayoutX(buildings[1].getX() + buildings[1].getWidth() / 2 - abe1.getFitWidth() / 2);
         abe1.setLayoutY(CANVAS_Y - (buildings[1].getHeight() + abe1.getFitHeight()));
         abe2.setLayoutX(buildings[7].getX() + buildings[7].getWidth() / 2 - abe2.getFitWidth() / 2);
         abe2.setLayoutY(CANVAS_Y - (buildings[7].getHeight() + abe2.getFitHeight()));
-
+        // Sætter positioner af spillere
         player1.setX(abe1.getLayoutX() + abe1.getFitWidth() / 2);
         player1.setY(buildings[1].getHeight() + abe1.getFitHeight() / 2);
         player2.setX(abe2.getLayoutX() + abe2.getFitWidth() / 2);
         player2.setY(buildings[7].getHeight() + abe2.getFitHeight() / 2);
-
+        // Sætter position af projektil
         proj.setX(player1.getX());
         proj.setY(player1.getY());
-
+        // Sætter position af projektil sprite
         BA.setLayoutX(player1.getX());
         BA.setLayoutY(CANVAS_Y - player1.getY());
-        System.out.println(BA.getLayoutX());
-        System.out.println(BA.getLayoutY());
     }
 
     //Anders
@@ -321,7 +319,7 @@ public class GameController implements Initializable {
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += throwanimation.getCurrentTime().toSeconds();
+                realtime += throwanimation.getCurrentTime().toSeconds(); // kan ganges med konstant for at gøre kast hurtigere
                 x = startX + VELOCITY * realtime * Math.cos(angle);
                 y = startY + VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime;
 
@@ -356,6 +354,9 @@ public class GameController implements Initializable {
 
                     // Check om spiller blev ramt
                     if (playerHit) shootingPlayer.addPoint(1);
+
+                    // Eksplosion ved kollision med bygning
+                    if (buildingHit) explosion(x, y);
 
                     //status på point
                     pointStatus(player1);
@@ -451,6 +452,63 @@ public class GameController implements Initializable {
         indicatorp1.setLayoutY(BA.getLayoutY() + 25);
         indicatorp2.setLayoutX(BA.getLayoutX() + 20);
         indicatorp2.setLayoutY(BA.getLayoutY() + 25);
+    }
+
+    // Markus
+    // Animation af eksplosion af bygning (ændrer ikke bygnings hitbox)
+    public void explosion(double x, double y) {
+
+        double explosionRadius = 10;
+        int cycles = 40;
+
+
+
+        /*
+        // Tegn hul i bygning (skal være samme farve som baggrund)
+        Circle c = new Circle();
+        c.setCenterX(x);
+        c.setCenterY(CANVAS_Y - y);
+        c.setRadius(explosionRadius);
+        c.setFill(Color.rgb(87, 182, 255));
+        anchorPane.getChildren().add(c);
+        // ^^ Kan fjernes hvis det ser mærkeligt ud at bygning bliver destrueret uden deres hitbox ændrer sig
+        */
+
+
+
+        // Eksplosion animation cirkel
+        Timeline explosionAnimation = new Timeline();
+        explosionAnimation.setCycleCount(cycles);
+
+        Circle blast = new Circle();
+        blast.setCenterX(x);
+        blast.setCenterY(CANVAS_Y - y);
+        blast.setRadius(0);
+        blast.setFill(Color.RED);
+        blast.setId("blast");
+        anchorPane.getChildren().add(blast);
+
+        // Generere keyframes
+        KeyFrame explosionKeyframe = new KeyFrame(Duration.millis(10), new EventHandler<ActionEvent>() {
+
+            Circle blast = (Circle) anchorPane.lookup("#blast");
+            int cycleCount = 0;
+
+            // Cirkel vokser i 10 gentagelser -> er statisk i næste 20 -> krymper i 10 gentagelser
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                cycleCount++;
+                if (cycleCount <= 10) {
+                    blast.setRadius(blast.getRadius() + explosionRadius / 10);
+                } else if (cycleCount > 30 && cycleCount < cycles) {
+                    blast.setRadius(blast.getRadius() - explosionRadius / 10);
+                } else  if (cycleCount == cycles){
+                    anchorPane.getChildren().remove(blast);
+                }
+            }
+        });
+        explosionAnimation.getKeyFrames().add(explosionKeyframe);
+        explosionAnimation.play();
     }
 
 /*
