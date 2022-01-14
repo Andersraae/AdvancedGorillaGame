@@ -39,10 +39,10 @@ public class GameController implements Initializable {
     private static int FirstTo = StartController.PlayingTo;
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-    private static double g = StartController.gravity;
+    public static double g = StartController.gravity;
 
     //AI
-    public static Computer computer1, computer2;
+    public Computer computer1, computer2;
 
     //variable fra game-view ift point og navne
     @FXML
@@ -78,7 +78,7 @@ public class GameController implements Initializable {
     public int maxHeight = 8;
     public int minHeight = 2;
     public Color[] buildingColors = {Color.DARKTURQUOISE, Color.INDIANRED, Color.LIGHTGREY};
-    public Building[] buildings;
+    public static Building[] buildings;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -104,13 +104,18 @@ public class GameController implements Initializable {
 
         resetImage();
 
+
         //setup computer
         computer1 = new Computer(player1,player2);
         computer2 = new Computer(player2,player1);
         player1.setComputer(StartController.player1AI > 0); // 0 = computer ikke aktiveret
         player2.setComputer(StartController.player2AI > 0);
-        computer1.setup(StartController.player1AI); //hvis computer er slået fra, gør de to kald ikke noget
-        computer2.setup(StartController.player2AI);
+        try {
+            computer1.setup(StartController.player1AI); //hvis computer er slået fra, gør de to kald ikke noget
+            computer2.setup(StartController.player2AI);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (manuelKast){
             throwbtn.setOpacity(1);
@@ -182,8 +187,6 @@ public class GameController implements Initializable {
 
         BA.setLayoutX(player1.getX());
         BA.setLayoutY(CANVAS_Y - player1.getY());
-        System.out.println(BA.getLayoutX());
-        System.out.println(BA.getLayoutY());
     }
 
     //Anders
@@ -299,6 +302,12 @@ public class GameController implements Initializable {
         rotationBanan.setAutoReverse(false);
         rotationBanan.setNode(BA);
 
+        //andreas test
+        Guess gu = new Guess((int) ANGLE_IN_DEGREES,VELOCITY);
+        System.out.println("gæt:" + gu);
+
+
+
         //Anders (Omskrivning) Andreas (Udregning)
         //Kurve animation
         //TODO: Pas metoden til, så bananen ikke bare starter i 0,0
@@ -318,7 +327,7 @@ public class GameController implements Initializable {
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += throwanimation.getCurrentTime().toSeconds();
+                realtime += throwanimation.getCurrentTime().toSeconds() * 10;
                 x = startX + VELOCITY * realtime * Math.cos(angle);
                 y = startY + VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime;
 
@@ -339,6 +348,14 @@ public class GameController implements Initializable {
                     // Kollision med bygning
                     for (int i = 0; i < buildings.length; i++) {
                         if (buildings[i].collision(proj)) {
+
+                            //Andreas - Computer laver nye gæt, hvis det sidste gæt rammer en bygning
+                            if(player1HasTurn){
+                                computer1.calculateNewMoves();
+                            } else {
+                                computer2.calculateNewMoves();
+                            }
+
                             buildingHit = true;
                             System.out.println("Ramt bygning " + i);
                             rotationBanan.stop();

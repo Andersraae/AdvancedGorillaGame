@@ -2,7 +2,7 @@ package ADVANCEDGORILLA;
 import java.util.ArrayList;
 import java.util.Random;
 
-// TODO: vind, bygninger, manuel kast knap
+// TODO: vind
 
 /*
 dif:1 gns:11.322
@@ -11,7 +11,6 @@ dif:3 gns:7.897
 dif:4 gns:5.717
 dif:5 gns:2.041
  */
-
 
 //Lavet af Andreas
 public class Computer{
@@ -22,8 +21,11 @@ public class Computer{
     private ArrayList<Guess> moves;
     private int currentGuessCounter;
     private int difficulty;
-    private static double g = 9.81;
+    private static double g = GameController.g;
     private int val;
+    public static double dy;
+    private int lowAngle;
+    private static int highestAngle = 89;
 
     //konstruktør
     public Computer(Player shooter, Player target){
@@ -32,6 +34,7 @@ public class Computer{
         this.moves = new ArrayList<>();
         this.currentGuessCounter = 0;
         this.difficulty = 0;
+        this.lowAngle = 1;
 
         //setup side
         this.val = 1; //1=venstre, -1=højre
@@ -41,7 +44,7 @@ public class Computer{
     }
 
     //kaldes hver gang spillet startes
-    public void setup(int difficulty){
+    public void setup(int difficulty) throws InterruptedException {
 
         //fjerner tidligere gæt
         this.moves.clear();
@@ -62,22 +65,34 @@ public class Computer{
          return move;
     }
 
+    //computer har brugt alle sine gæt og laver nye gæt
+    //kaldes når computeren rammer en bygning med sit sidste gæt
+    public void calculateNewMoves(){
+        if(this.currentGuessCounter + 1 >= this.moves.size()){
+            this.lowAngle = 45;
+            this.moves.clear();
+            calulateMoves();
+            this.currentGuessCounter = 0;
+        }
+    }
+
     //beregner alle de gæt der skal til for at ramme modspilleren
     //og føjer dem til listen moves
-    public void calulateMoves() {
+    public void calulateMoves(){
         //constants and variables
         Random random = new Random();
         int currentGuess = 1;
 
-        //find the lowest possible
-        int angleInDegrees = random.nextInt(89) / 2 * 2 + 1; //temporary
-        double angleInRadians = Math.toRadians(angleInDegrees);
 
         //generate random correct guess
-        double num = Math.abs(target.getX() - shooter.getX());
-        double udtryk = 2 * Math.sin(angleInRadians) * (Math.sin(angleInRadians) * Math.sin(angleInRadians) - 1);
-        double velocity = Math.abs((Math.sqrt(-udtryk * Math.cos(angleInRadians) * g * num) / udtryk));
-        Guess correct = new Guess(angleInDegrees, velocity);
+        Guess correct;
+        int angleInDegrees = random.nextInt(highestAngle - this.lowAngle) / 2 * 2 + this.lowAngle; //temporary
+        double a = Math.toRadians(angleInDegrees);
+        double dx = Math.abs(target.getX() - shooter.getX());
+        dy = shooter.getY() - target.getY();
+        double udtryk = 2*(dx*Math.pow(Math.sin(a),3)-dy*Math.pow(Math.cos(a),3)-dx*Math.sin(a));
+        double v0 = Math.abs((Math.sqrt(-udtryk*Math.cos(a)*g)*dx/udtryk));
+        correct = new Guess(angleInDegrees, v0);
 
         //scale bounds with difficulty
         int totalAngles = (int) (89 - this.difficulty * 86.0 / 5);
@@ -89,9 +104,9 @@ public class Computer{
         int tal = random.nextInt(totalAngles);
         angleLower = correct.getAngle() - tal;
         angleUpper = correct.getAngle() + totalAngles - tal;
-        if (angleLower < 1) {
+        if (angleLower < this.lowAngle) {
             angleUpper += Math.abs(angleLower) + 1;
-            angleLower = 1;
+            angleLower = this.lowAngle;
         }
 
         tal = random.nextInt(totalVelocity);
@@ -154,7 +169,7 @@ public class Computer{
         double a = Math.toRadians(guess.angle);
         int x = (int) (target.getX() - shooter.getX());
         int y = (int) (-g/(2*v0*v0*Math.cos(a)*Math.cos(a))*x*x+Math.tan(a)*x);
-        double l = Math.sqrt(y*y);
-        return l <= 12;
+        double l = Math.sqrt(y*y) - Math.abs(dy);
+        return l <= 1;
     }
 }
