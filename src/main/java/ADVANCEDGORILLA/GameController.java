@@ -13,10 +13,8 @@ import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
@@ -25,7 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
 
 public class GameController implements Initializable {
 
@@ -65,14 +62,11 @@ public class GameController implements Initializable {
 
     //Vind
     public double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
+    public Label visualwinddir,visualwindforce;
 
     //Terræn
     @FXML
     private AnchorPane anchorPane;
-    @FXML
-    private Rectangle player1Hitbox;
-    @FXML
-    private Rectangle player2Hitbox;
     public int blockHeight = 16;
     public int blockWidth = 72;
     public int maxHeight = 8;
@@ -99,6 +93,8 @@ public class GameController implements Initializable {
         //vind
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
+        visualwinddir.setText("Vindretning i grader: " + (int) winddirection);
+        visualwindforce.setText("Vindstyrke: " + (int) windforce);
 
         generateTerrain();
 
@@ -203,7 +199,7 @@ public class GameController implements Initializable {
                 displayangle = 180 - throwangledeg;
             }
 
-            throwvelocity /= 4; //Gør det nemmere at styre hastigheden
+            throwvelocity /= 2; //Gør det nemmere at styre hastigheden
 
             if (!hasthrown){
                 visualangle.setText("Vinkel: " + round(displayangle));
@@ -212,11 +208,11 @@ public class GameController implements Initializable {
 
 
             if (player1HasTurn){
-                indicatorp1.setEndX(xdiff/4);
-                indicatorp1.setEndY(-ydiff/4);
+                indicatorp1.setEndX(xdiff/2);
+                indicatorp1.setEndY(-ydiff/2);
             } else {
-                indicatorp2.setEndX(xdiff/4);
-                indicatorp2.setEndY(-ydiff/4);
+                indicatorp2.setEndX(xdiff/2);
+                indicatorp2.setEndY(-ydiff/2);
             }
         }
     }
