@@ -54,7 +54,6 @@ public class StartController implements Initializable {
             //Hverken antal runder eller gravity må være negativ
             if (PlayingTo > 0 && gravity > 0){
                 GameApplication.setStage("game-view.fxml");
-                System.out.println(windDifficulty);
             }
 
         } catch (Exception e){
