@@ -1,5 +1,12 @@
 package ADVANCEDGORILLA;
 
+//**************************************************************
+// StartController
+// Klassen håndterer datainput fra spilleren på startskærmen
+//
+// Lavet af Andreas
+//**************************************************************
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -22,6 +29,11 @@ public class StartController implements Initializable {
     private CheckBox CheckBoxManuelKast;
     public static boolean manuelKast;
 
+    //vind
+    @FXML
+    private ComboBox ComboBoxWind;
+    public static int windDifficulty;
+
     //AI
     @FXML
     private ComboBox ComboBoxPlayer1AI, ComboBoxPlayer2AI;
@@ -31,14 +43,18 @@ public class StartController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         ComboBoxPlayer1AI.getItems().addAll("off",1,2,3,4,5);
         ComboBoxPlayer2AI.getItems().addAll("off",1,2,3,4,5);
+        ComboBoxWind.getItems().addAll(0,1,2,3,4,5);
     }
 
+    //Kaldes når Start-knappen klikkes
     public void startGame(){
         try{
-            setValues();
+            setValues(); // evaluerer datainput
+
             //Hverken antal runder eller gravity må være negativ
             if (PlayingTo > 0 && gravity > 0){
                 GameApplication.setStage("game-view.fxml");
+                System.out.println(windDifficulty);
             }
 
         } catch (Exception e){
@@ -64,12 +80,14 @@ public class StartController implements Initializable {
             namePlayer2 = TextNamePlayer2.getText();
         }
 
-        //Sæt spil
+        //Sæt antallet af point der spilles til
         if (TextPlayingTo.getText().length() == 0){
             PlayingTo = 3;
         } else{
             PlayingTo = Integer.parseInt(TextPlayingTo.getText());
         }
+
+        //Sæt gravity
         if (TextGravity.getText().length() == 0){
             gravity = 9.81;
         } else{
@@ -89,7 +107,16 @@ public class StartController implements Initializable {
             player2AI = (int) ComboBoxPlayer2AI.getValue();
         }
 
-        manuelKast = CheckBoxManuelKast.isSelected();
+        manuelKast = CheckBoxManuelKast.isSelected(); //brug manuel kast hvis det er valgt
+
+        //evaluer valg af sværhedsgrad af vind
+        if (ComboBoxWind.getValue() == null){
+            windDifficulty = 0;
+        } else {
+            windDifficulty = (int) ComboBoxWind.getValue();
+        }
+
+
 
     }
 }

@@ -21,8 +21,10 @@ import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class GameController implements Initializable {
 
@@ -61,7 +63,7 @@ public class GameController implements Initializable {
     public boolean hasthrown = false; //Begrænser
 
     //Vind
-    public static double winddirection, windforce; //TODO: Tilføj sværhedsgrad og skaler vinden op efter det
+    public static double winddirection, windforce;
     public Label visualwinddir,visualwindforce;
 
     //Terræn
@@ -73,6 +75,7 @@ public class GameController implements Initializable {
     public int minHeight = 2;
     public Color[] buildingColors = {Color.DARKTURQUOISE, Color.INDIANRED, Color.LIGHTGREY};
     public static Building[] buildings;
+    ArrayList<Object> blokke = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -90,18 +93,13 @@ public class GameController implements Initializable {
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
 
-        //vind
-        windforce = Wind.changeWindForce();
-        winddirection = Wind.changeWindDirection();
-        visualwinddir.setText("Vindretning i grader: " + (int) winddirection);
-        visualwindforce.setText("Vindstyrke: " + (int) windforce);
-
+        //vind og terræn
+        updateWind();
         generateTerrain();
-
         resetImage();
 
-
-        //setup computer
+        // Andreas
+        // setup computer
         computer1 = new Computer(player1,player2);
         computer2 = new Computer(player2,player1);
         player1.setComputer(StartController.player1AI > 0); // 0 = computer ikke aktiveret
@@ -123,6 +121,14 @@ public class GameController implements Initializable {
             visualvelocity.setOpacity(1);
             visualangle.setOpacity(1);
         }
+    }
+
+    //opdaterer vinden
+    public void updateWind(){
+        windforce = Wind.changeWindForce();
+        winddirection = Wind.changeWindDirection();
+        visualwinddir.setText("Vindretning i grader: " + (int) winddirection);
+        visualwindforce.setText("Vindstyrke: " + (int) windforce);
     }
 
     // Markus
@@ -147,6 +153,7 @@ public class GameController implements Initializable {
                 block.setHeight(blockHeight);
                 block.setFill(buildingColors[color]);
                 anchorPane.getChildren().add(block);
+                blokke.add(block);
 
                 // Tegn vinduer
                 for (int k = 0; k < 6; k++) {
@@ -161,6 +168,7 @@ public class GameController implements Initializable {
                         window.setFill(Color.SLATEGRAY);
                     }
                     anchorPane.getChildren().add(window);
+                    blokke.add(window);
                 }
             }
             // Opret array med bygninger
@@ -183,6 +191,16 @@ public class GameController implements Initializable {
         // Sætter position af projektil sprite
         BA.setLayoutX(player1.getX());
         BA.setLayoutY(CANVAS_Y - player1.getY());
+    }
+
+    //Andreas
+    //Regenererer banen hver gang en spiller rammes
+    public void regenTerrain(){
+        for (Object o: blokke){
+            anchorPane.getChildren().remove(o);
+        }
+        blokke.clear();
+        generateTerrain();
     }
 
     //Anders
@@ -298,11 +316,9 @@ public class GameController implements Initializable {
         rotationBanan.setAutoReverse(false);
         rotationBanan.setNode(BA);
 
-        //andreas test
+        //printer gættet
         Guess gu = new Guess((int) ANGLE_IN_DEGREES,VELOCITY);
         System.out.println("gæt:" + gu);
-
-
 
         //Anders (Omskrivning) Andreas (Udregning)
         //Kurve animation
@@ -323,15 +339,15 @@ public class GameController implements Initializable {
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += throwanimation.getCurrentTime().toSeconds() * 7; // kan ganges med konstant for at gøre kast hurtigere
+                realtime += throwanimation.getCurrentTime().toSeconds() * 5; // kan ganges med konstant for at gøre kast hurtigere
 
-                if(shootingPlayer.isComputer()){
-                    x = startX + VELOCITY * realtime * Math.cos(angle);
-                    y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime);
+                x = startX + VELOCITY * realtime * Math.cos(angle);
+                y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime);
 
-                } else{
-                    x = startX + VELOCITY * realtime * Math.cos(angle) - realtime * windforce * Math.cos(Math.toRadians(winddirection));
-                    y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime) - (realtime * windforce * Math.sin(Math.toRadians(winddirection)));
+                //bananen påvirkes af vinden, hvis spilleren ikke er styret af computeren
+                if (!shootingPlayer.isComputer()){
+                    x-= realtime * windforce * Math.cos(Math.toRadians(winddirection));
+                    y-= realtime * windforce * Math.sin(Math.toRadians(winddirection));
                 }
 
                 proj.setX(x);
@@ -372,7 +388,13 @@ public class GameController implements Initializable {
                     rotationBanan.stop();
 
                     // Check om spiller blev ramt
-                    if (playerHit) shootingPlayer.addPoint(1);
+                    if (playerHit){
+                        shootingPlayer.addPoint(1);
+                        regenTerrain();
+                        computer1.calculateNewMoves();
+                        computer2.calculateNewMoves();
+                        updateWind();
+                    }
                     player1point.setText(Integer.toString(player1.getPoint()));
                     player2point.setText(Integer.toString(player2.getPoint()));
 
@@ -392,7 +414,6 @@ public class GameController implements Initializable {
                         e.printStackTrace();
                     }
                 }
-
             }
         });
         throwanimation.getKeyFrames().add(bananakeyrframe);
@@ -442,7 +463,6 @@ public class GameController implements Initializable {
         }
         return false;
     }
-
 
     //Andreas
     public void turnStatus() throws IOException {
@@ -496,8 +516,6 @@ public class GameController implements Initializable {
         double explosionRadius = 10;
         int cycles = 40;
 
-
-
         /*
         // Tegn hul i bygning (skal være samme farve som baggrund)
         Circle c = new Circle();
@@ -508,8 +526,6 @@ public class GameController implements Initializable {
         anchorPane.getChildren().add(c);
         // ^^ Kan fjernes hvis det ser mærkeligt ud at bygning bliver destrueret uden deres hitbox ændrer sig
         */
-
-
 
         // Eksplosion animation cirkel
         Timeline explosionAnimation = new Timeline();

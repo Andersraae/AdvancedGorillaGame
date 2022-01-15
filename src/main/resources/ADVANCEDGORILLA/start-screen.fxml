@@ -9,7 +9,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="272.0" prefWidth="331.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ADVANCEDGORILLA.StartController">
    <children>
-      <Button layoutX="128.0" layoutY="205.0" mnemonicParsing="false" onAction="#startGame" prefHeight="35.0" prefWidth="76.0" text="Start" />
+      <Button layoutX="139.0" layoutY="208.0" mnemonicParsing="false" onAction="#startGame" prefHeight="35.0" prefWidth="76.0" text="Start" />
       <TextField fx:id="TextPlayingTo" layoutX="139.0" layoutY="23.0" prefHeight="26.0" prefWidth="76.0" />
       <Label layoutX="84.0" layoutY="27.0" text="Først til:" />
       <TextField fx:id="TextNamePlayer1" layoutX="139.0" layoutY="62.0" prefHeight="26.0" prefWidth="76.0" />
@@ -18,8 +18,12 @@
       <TextField fx:id="TextGravity" layoutX="139.0" layoutY="136.0" prefHeight="26.0" prefWidth="76.0" />
       <Label layoutX="32.0" layoutY="104.0" text="Navn på Spiller 2:" />
       <Label layoutX="58.0" layoutY="140.0" text="Tyngdekraft:" />
-      <ComboBox fx:id="ComboBoxPlayer1AI" layoutX="230.0" layoutY="63.0" prefHeight="25.0" prefWidth="60.0" promptText="AI" />
-      <ComboBox fx:id="ComboBoxPlayer2AI" layoutX="230.0" layoutY="101.0" prefHeight="25.0" prefWidth="60.0" promptText="AI" />
-      <CheckBox fx:id="CheckBoxManuelKast" layoutX="102.0" layoutY="173.0" mnemonicParsing="false" text="Toggle Manuel Kast" />
+      <ComboBox fx:id="ComboBoxPlayer1AI" layoutX="243.0" layoutY="62.0" prefHeight="25.0" prefWidth="60.0" promptText="off" />
+      <ComboBox fx:id="ComboBoxPlayer2AI" layoutX="243.0" layoutY="100.0" prefHeight="25.0" prefWidth="60.0" promptText="off" />
+      <CheckBox fx:id="CheckBoxManuelKast" layoutX="102.0" layoutY="173.0" mnemonicParsing="false" text="Brug Manuel Kast" />
+      <Label layoutX="222.0" layoutY="67.0" text="AI:" />
+      <Label layoutX="222.0" layoutY="105.0" text="AI:" />
+      <Label layoutX="223.0" layoutY="140.0" text="Vind:" />
+      <ComboBox fx:id="ComboBoxWind" layoutX="253.0" layoutY="136.0" prefHeight="26.0" prefWidth="27.0" promptText="0" />
    </children>
 </AnchorPane>

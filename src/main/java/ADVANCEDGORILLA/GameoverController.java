@@ -8,11 +8,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+//*********************************************
+// GameoverController
+// Klassens opgave er at vise spillernes navne
+// og score, efter spillet er overstået.
+// Kan også genstarte spillet
+//
+// Lavet af Andreas
+//********************************************
 
 public class GameoverController implements Initializable {
 
     @FXML
-    private Label labelPlayer1, labelPlayer2;
+    private Label labelPlayer1, labelPlayer2; //label til spillernes navne og score
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -20,10 +28,8 @@ public class GameoverController implements Initializable {
         labelPlayer2.setText(GameController.player2.getName() + ": \t" + GameController.player2.getPoint());
     }
 
+    //lukker vinduet og åbner startskærmen, hvor spilleren kan starte det næste spil
     public void reset() throws IOException {
         GameApplication.setStage("start-screen.fxml");
     }
-
-
-
 }

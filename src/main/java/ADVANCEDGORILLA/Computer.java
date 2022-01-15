@@ -2,17 +2,21 @@ package ADVANCEDGORILLA;
 import java.util.ArrayList;
 import java.util.Random;
 
-// TODO: vind
+//******************************************************************
+//                         Computerklasse
+// Klassen bruges når der spilles mod computeren.
+// Computeren genererer først en tilfældig vinkel
+// og beregner den hastighed der skal til for at ramme
+// med den vinkel.
+// Derefter gætter computeren på en vinkel og hastighed
+// indtil det korrekte svar er gættet.
+// Antallet af gæt føjes til en liste og er dermed
+// det totale antal gæt det tager computeren at ramme modspilleren
+// Computerens sværhedsgrad påvirker antallet af gæt der
+// skal til.
+//                      Lavet af Andreas
+//******************************************************************
 
-/*
-dif:1 gns:11.322
-dif:2 gns:9.583
-dif:3 gns:7.897
-dif:4 gns:5.717
-dif:5 gns:2.041
- */
-
-//Lavet af Andreas
 public class Computer{
 
     //klassevariable
@@ -56,7 +60,7 @@ public class Computer{
         }
     }
 
-    //retunerer det næste gæt
+    //retunerer det næste gæt i listen
     public Guess getNextMove(){
         Guess move= this.moves.get(this.currentGuessCounter);
          if (this.currentGuessCounter + 1 < this.moves.size()){
@@ -69,7 +73,7 @@ public class Computer{
     //kaldes når computeren rammer en bygning med sit sidste gæt
     public void calculateNewMoves(){
         if(this.currentGuessCounter + 1 >= this.moves.size()){
-            this.lowAngle = 45;
+            this.lowAngle = 45; // højere vinkel gør det mindre sandsynligt at ramme en bygning
             this.moves.clear();
             calulateMoves();
             this.currentGuessCounter = 0;
@@ -79,13 +83,14 @@ public class Computer{
     //beregner alle de gæt der skal til for at ramme modspilleren
     //og føjer dem til listen moves
     public void calulateMoves(){
-        //constants and variables
+
+        //variabler
         Random random = new Random();
         int currentGuess = 1;
 
-        //generate random correct guess
+        //genererer tilfældigt korrekt svar
         Guess correct;
-        int angleInDegrees = random.nextInt(highestAngle - this.lowAngle) / 2 * 2 + this.lowAngle; //temporary
+        int angleInDegrees = random.nextInt(highestAngle - this.lowAngle) / 2 * 2 + this.lowAngle;
         double a = Math.toRadians(angleInDegrees);
         double dx = Math.abs(target.getX() - shooter.getX());
         dy = shooter.getY() - target.getY();
@@ -93,11 +98,11 @@ public class Computer{
         double v0 = Math.abs((Math.sqrt(-udtryk*Math.cos(a)*g)*dx/udtryk));
         correct = new Guess(angleInDegrees, v0);
 
-        //scale bounds with difficulty
-        int totalAngles = (int) (89 - this.difficulty * 86.0 / 5);
-        int totalVelocity = (int) (413 - this.difficulty * 410.0 / 5);
+        //skaler antallet af muligheder med sværhedsgraden
+        int totalAngles = 15 - 2 * this.difficulty;
+        int totalVelocity = 15 - 2 * this.difficulty;
 
-        //set lower and upper bounds
+        //sæt øvre og nedre grænse for vinkel
         int angleLower, angleUpper;
         double velcocityLower, velocityUpper;
         int tal = random.nextInt(totalAngles);
@@ -108,6 +113,7 @@ public class Computer{
             angleLower = this.lowAngle;
         }
 
+        //sæt øvre og nedre grænse for hastighed
         tal = random.nextInt(totalVelocity);
         velcocityLower = (int) (correct.getVelocity() - tal);
         velocityUpper = (int) (correct.getVelocity() + totalVelocity - tal);
@@ -116,59 +122,54 @@ public class Computer{
             velcocityLower = 1;
         }
 
-        //guess random odd angle and velocity
+        //gæt på en tilfældig hastighed og vinkel
         int guessedAngle = random.nextInt(angleUpper - angleLower) + angleLower;
         double guessedVelocity = random.nextInt((int) (velocityUpper - velcocityLower)) + velcocityLower;
         this.moves.add(new Guess(guessedAngle, guessedVelocity));
 
-        //while projectile doesn't hit player
+        //gætter indtil modspilleren rammes
         while (!playerIsHit(this.moves.get(currentGuess - 1))) {
 
-            //evaluate angle
-            //if too high, lowerBound<correct<prevAnswer
+            //evaluer sidste gæt
+            //hvis vinklen var for høj, lowerBound<correct<prevAnswer
             if (correct.getAngle() < guessedAngle) {
                 angleUpper = guessedAngle - 1;
             }
 
-            //if too low, answer<correct<upperbound
+            //hvis vinkel var for lav, answer<correct<upperbound
             if (correct.getAngle() > guessedAngle) {
                 angleLower = guessedAngle + 1;
             }
 
-            //evaluate velocity
-            //if too high, lowerBound<correct<prevAnswer
+            //evaluer sidste gæt
+            //hvis hastigheden var for høj, lowerBound<correct<prevAnswer
             if (correct.getVelocity() < guessedVelocity) {
                 velocityUpper = guessedVelocity - 1;
             }
 
-            //if too low, answer<correct<upperbound
+            //hvis hastigheden var for lav, answer<correct<upperbound
             if (correct.getVelocity() > guessedVelocity) {
                 velcocityLower = guessedVelocity + 1;
             }
 
-            //guess the numbers in the middle
+            //gæt på den vinkel og hastighed der ligger i midten af den øvre og nedre grænse
             guessedVelocity = velocityUpper - (velocityUpper - velcocityLower) / 2;
             guessedAngle = angleUpper - (angleUpper - angleLower) / 2 * 2;
             this.moves.add(new Guess(guessedAngle, guessedVelocity));
 
-            //add one
+            //tilføj en til antal gæt
             currentGuess++;
         }
     }
 
     //retunerer true hvis en spiller er ramt
     public boolean playerIsHit(Guess guess){
-        Guess g = new Guess(guess.getAngle()*this.val,guess.getVelocity()*this.val);
-        return playerIsHit(this.shooter,this.target,g);
-    }
-
-    //retunerer true hvis en spiller er ramt
-    public static boolean playerIsHit(Player shooter,Player target,Guess guess){
-        double v0 = guess.velocity;
-        double a = Math.toRadians(guess.angle);
-        int x = (int) (target.getX() - shooter.getX());
+        Guess gues = new Guess(guess.getAngle()*this.val,guess.getVelocity()*this.val);
+        double v0 = gues.velocity;
+        double a = Math.toRadians(gues.angle);
+        int x = (int) (this.target.getX() - this.shooter.getX());
         int y = (int) (-g/(2*v0*v0*Math.cos(a)*Math.cos(a))*x*x+Math.tan(a)*x);
         double l = Math.sqrt(y*y) - Math.abs(dy);
-        return l <= 1;
+        return l <= 12;
     }
 }
