@@ -17,7 +17,7 @@ public class Wind {
 
     public static double changeWindForce(){
         int difficulty = StartController.windDifficulty;
-        int num = randi.nextInt(20 * difficulty - 10 * difficulty) + 10 * difficulty;
+        int num = randi.nextInt(20 * difficulty - 10 * difficulty + 1) + 10 * difficulty;
         return num;
     }
 
