@@ -434,8 +434,8 @@ public class GameController implements Initializable {
                     if (playerHit){
                         shootingPlayer.addPoint(1);
                         regenTerrain();
-                        computer1.calculateNewMoves();
-                        computer2.calculateNewMoves();
+                        computer1.resetAndCalculate();
+                        computer2.resetAndCalculate();
                         updateWind();
                     }
                     player1point.setText(Integer.toString(player1.getPoint()));
@@ -481,9 +481,9 @@ public class GameController implements Initializable {
 
         //Andreas - Computer laver nye gæt når alle gæt er brugt
         if(player1HasTurn){
-            computer1.calculateNewMoves();
+            computer1.calculateBetterMoves();
         } else {
-            computer2.calculateNewMoves();
+            computer2.calculateBetterMoves();
         }
     }
 
