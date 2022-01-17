@@ -334,6 +334,7 @@ public class GameController implements Initializable {
     }
 
     //Christian
+    //Metode for kast arm animation
     public void animationKast() throws InterruptedException {
         KeyFrame resetframe = new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
         @Override
@@ -359,7 +360,7 @@ public class GameController implements Initializable {
     //Anders (Omskrevet udregning til animation og implementeret eksisterende animationer)
     public void animateProjectile(Player shootingPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
         //Christian
-        //rotation af banan :)
+        //Rotation af banan
         RotateTransition rotationBanan = new RotateTransition();
         rotationBanan.setCycleCount(rotationBanan.INDEFINITE); //Fortsæt rotation
         rotationBanan.setByAngle(360);
@@ -402,7 +403,6 @@ public class GameController implements Initializable {
                 proj.setY(y);
 
                 //Christian
-                //sætter pos af billede til projectile Pos
                 BA.setLayoutX(x - BA.getFitWidth() / 2); // Ændret så center af så proj's koordinater er centrum af billede
                 BA.setLayoutY(CANVAS_Y - y - BA.getFitHeight() / 2); // Ændret så center af så proj's koordinater er centrum af billede
 
@@ -532,6 +532,7 @@ public class GameController implements Initializable {
     }
 
     //Christian
+    //Reset banan til original pos
     public void resetImage (){
         if(player1HasTurn){
             BA.setLayoutX(player1.getX() - BA.getFitWidth() / 2);
