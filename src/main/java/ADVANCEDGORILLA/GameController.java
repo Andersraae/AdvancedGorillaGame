@@ -52,7 +52,8 @@ public class GameController implements Initializable {
 
     //Visuelt/Animation
     public ImageView abe1, abe2, BA;
-    public Timeline  animationline = new Timeline();
+    public Timeline  throwanimation = new Timeline();
+    public RotateTransition rotationBanan = new RotateTransition();
     public Image kast = new Image(String.valueOf(GameApplication.class.getResource("Kast.png")));
     public Image normal = new Image(String.valueOf(GameApplication.class.getResource("gorilla.png")));
 
@@ -144,6 +145,14 @@ public class GameController implements Initializable {
             visualvelocity.setOpacity(1);
             visualangle.setOpacity(1);
         }
+
+        //Christian
+        //Rotation af banan
+        rotationBanan.setCycleCount(rotationBanan.INDEFINITE); //Fortsæt rotation
+        rotationBanan.setByAngle(360);
+        rotationBanan.setInterpolator(Interpolator.LINEAR); //Konstant rotation
+        rotationBanan.setAutoReverse(false);
+        rotationBanan.setNode(BA);
     }
 
     //Anders
@@ -346,32 +355,19 @@ public class GameController implements Initializable {
             }
         }
     });
-        animationline.setCycleCount(1);
+        throwanimation.setCycleCount(1);
         if (player1HasTurn) {
             abe1.setImage(kast);
         }else {
             abe2.setImage(kast);
         }
-        animationline.getKeyFrames().add(resetframe);
+        throwanimation.getKeyFrames().add(resetframe);
     }
 
     //Andreas (Udregningen)
     //Christian (Animation)
     //Anders (Omskrevet udregning til animation og implementeret eksisterende animationer)
     public void animateProjectile(Player shootingPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
-        //Christian
-        //Rotation af banan
-        RotateTransition rotationBanan = new RotateTransition();
-        rotationBanan.setCycleCount(rotationBanan.INDEFINITE); //Fortsæt rotation
-        rotationBanan.setByAngle(360);
-        rotationBanan.setInterpolator(Interpolator.LINEAR); //Konstant rotation
-        rotationBanan.setAutoReverse(false);
-        rotationBanan.setNode(BA);
-
-        //printer gættet
-        Guess gu = new Guess((int) ANGLE_IN_DEGREES,VELOCITY);
-        System.out.println("gæt:" + gu);
-
         //Anders (Omskrivning) Andreas (Udregning)
         //Kurve animation
         Timeline throwanimation = new Timeline();
@@ -426,7 +422,7 @@ public class GameController implements Initializable {
                 if (y < 0 || x > CANVAS_X || x < 0 || playerHit || buildingHit){
                     throwanimation.stop(); //Stopper alle animationerne til kastet
                     rotationBanan.stop();
-                    animationline.stop();
+                    throwanimation.stop();
 
                     if(player1HasTurn){ //Resetter gorilla billedet
                         abe1.setImage(normal);
@@ -472,7 +468,7 @@ public class GameController implements Initializable {
             indicatorp2.setOpacity(0);
 
             animationKast();
-            animationline.play(); //Start animation af abe der kaster
+            throwanimation.play(); //Start animation af abe der kaster
 
             if (player1HasTurn) {
                 rotationBanan.setRate(1); //Roter banan i positiv omløbsretning
