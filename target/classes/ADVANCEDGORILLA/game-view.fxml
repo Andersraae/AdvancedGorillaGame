@@ -39,16 +39,19 @@
 
       <!-- Visuel kast data -->
       <!-- Aber -->
-      <ImageView fx:id="abe1" fitHeight="50.0" fitWidth="40.0" layoutX="-1.0" layoutY="312.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="abe1" fitHeight="50.0" fitWidth="40.0" layoutX="-1.0" layoutY="312.0" pickOnBounds="true" preserveRatio="false">
          <image>
             <Image url="@Gorilla.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="abe2" fitHeight="50.0" fitWidth="40.0" layoutX="513.0" layoutY="307.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="abe2" fitHeight="50.0" fitWidth="40.0" layoutX="513.0" layoutY="307.0" pickOnBounds="true" preserveRatio="false">
          <image>
             <Image url="@Gorilla.png" />
          </image>
       </ImageView>
+
+
+
       <!-- Aber -->
       <!-- Linjer -->
       <Line fx:id="indicatorp1" strokeWidth="2">

@@ -1,16 +1,16 @@
 package ADVANCEDGORILLA;
-import javafx.animation.Interpolator;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
-import javafx.animation.KeyFrame;
-import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 public class GameController implements Initializable {
@@ -80,6 +81,7 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //setup tur
+
         player1HasTurn = true;
         proj = new Projectile(0,0);
         winner = new Player(-1,-1,"null");
@@ -265,6 +267,51 @@ public class GameController implements Initializable {
         }
     }
 
+    //Christian
+    public void animationKast() throws InterruptedException {
+        Image kast = new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\Kast.png");
+        Image normal = new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\gorilla.png");
+        Timeline  animationline = new Timeline();
+
+
+
+
+        KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent actionEvent) {
+            if(player1HasTurn){
+                abe1.setImage(normal);
+            }else {
+                abe2.setImage(normal);
+            }
+
+        }
+    });
+        animationline.setCycleCount(1);
+        if (player1HasTurn) {
+            abe1.setImage(kast);
+        }else {
+            abe2.setImage(kast);
+        }
+
+        animationline.getKeyFrames().add(keyFrame1);
+        animationline.play();
+
+        /*
+    abe1.setImage(null);
+    abe1.setImage(new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\Kast.png"));
+    abe1.setFitHeight(85);
+    abe1.setFitWidth(65);
+    abe1.setLayoutX(abe1.getLayoutX());
+    abe1.setLayoutY(abe1.getLayoutY());
+    // vent tid idk???
+    //Duration.seconds(1);
+   // abe1.setImage(new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\gorilla.png"));
+   // abe1.setFitHeight(50);
+   // abe1.setFitWidth(40);
+*/
+    }
+
     //Anders
     //Til kast knappen
     public void kast() throws IOException, InterruptedException {
@@ -309,6 +356,7 @@ public class GameController implements Initializable {
     public void animateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
         //Christian
         //rotation af banan :)
+        animationKast();
         RotateTransition rotationBanan = new RotateTransition();
         rotationBanan.setCycleCount(rotationBanan.INDEFINITE);
         rotationBanan.setByAngle(360);
@@ -509,6 +557,7 @@ public class GameController implements Initializable {
         indicatorp2.setLayoutY(BA.getLayoutY() + 25);
     }
 
+
     // Markus
     // Animation af eksplosion af bygning (ændrer ikke bygnings hitbox)
     public void explosion(double x, double y) {
@@ -562,6 +611,7 @@ public class GameController implements Initializable {
         explosionAnimation.play();
     }
 
+    
 /*
     final Image[] deathAnimationImages = new Image[] {};
 
@@ -622,3 +672,4 @@ public void handle(ActionEvent event) {
     }
     */
 }
+
