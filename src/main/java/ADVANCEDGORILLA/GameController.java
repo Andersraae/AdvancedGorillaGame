@@ -377,21 +377,21 @@ public class GameController implements Initializable {
         Timeline throwanimation = new Timeline();
         throwanimation.setCycleCount(Timeline.INDEFINITE); //Fortsætter animationen til den stopper
         KeyFrame bananakeyrframe = new KeyFrame(Duration.millis(20), new EventHandler<ActionEvent>() {
-            double angle = Math.toRadians(ANGLE_IN_DEGREES);
+            final double angle = Math.toRadians(ANGLE_IN_DEGREES);
             double x = shootingPlayer.getX() - 40;
             double y = shootingPlayer.getY() - 10;
-            double startX = shootingPlayer.getX();
-            double startY = shootingPlayer.getY() - 10;
+            final double startX = shootingPlayer.getX();
+            final double startY = shootingPlayer.getY() - 10;
             double realtime;
             boolean buildingHit = false;
             boolean playerHit = false;
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += throwanimation.getCurrentTime().toSeconds() * 5; // kan ganges med konstant for at gøre kast hurtigere
+                realtime += throwanimation.getCurrentTime().toSeconds() * 5; //Hvor langt tid der er gået af animationen (Ganges for at gøre animationen hurtigere)
 
-                x = startX + VELOCITY * realtime * Math.cos(angle);
-                y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime);
+                x = startX + VELOCITY * realtime * Math.cos(angle); //Regner x værdi
+                y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime); //Og y værdi
 
                 //bananen påvirkes af vinden, hvis spilleren ikke er styret af computeren
                 if (!shootingPlayer.isComputer()){
@@ -399,7 +399,7 @@ public class GameController implements Initializable {
                     y-= realtime * windforce * Math.sin(Math.toRadians(winddirection));
                 }
 
-                proj.setX(x);
+                proj.setX(x); //Flytter projektil-objekt
                 proj.setY(y);
 
                 //Christian
@@ -424,10 +424,11 @@ public class GameController implements Initializable {
                 }
                 // Checker om banan har ramt noget eller er uden for vinduet (banan kan godt være over vinduet)
                 if (y < 0 || x > CANVAS_X || x < 0 || playerHit || buildingHit){
-                    throwanimation.stop();
+                    throwanimation.stop(); //Stopper alle animationerne til kastet
                     rotationBanan.stop();
                     animationline.stop();
-                    if(player1HasTurn){
+
+                    if(player1HasTurn){ //Resetter gorilla billedet
                         abe1.setImage(normal);
                     } else {
                         abe2.setImage(normal);
@@ -462,20 +463,22 @@ public class GameController implements Initializable {
             }
         });
         throwanimation.getKeyFrames().add(bananakeyrframe);
-        if (!hasthrown){
-            throwanimation.play();
-            indicatorp1.setOpacity(0);
+
+        if (!hasthrown){ //Hvis ikke spilleren har kastet allerede
+            hasthrown = true;
+
+            throwanimation.play(); //Start kaste animation
+            indicatorp1.setOpacity(0); //Gør indikatorene gennemsigtige
             indicatorp2.setOpacity(0);
 
             animationKast();
-            animationline.play();
+            animationline.play(); //Start animation af abe der kaster
 
-            hasthrown = true;
             if (player1HasTurn) {
-                rotationBanan.setRate(1);
+                rotationBanan.setRate(1); //Roter banan i positiv omløbsretning
                 rotationBanan.play();
             } else {
-                rotationBanan.setRate(-1);
+                rotationBanan.setRate(-1); //Roter banan i negativ omløbsretning
                 rotationBanan.play();
             }
         }
@@ -548,18 +551,18 @@ public class GameController implements Initializable {
     //Stiller indicatorene til at være
     public void resetIndicators(){
 
-        if (player1HasTurn){
+        if (player1HasTurn){ //Gør spillerens indikator synlig
             indicatorp1.setOpacity(1);
         } else {
             indicatorp2.setOpacity(1);
         }
 
-        indicatorp1.setEndY(0);
+        indicatorp1.setEndY(0); //Nulstil indikatorer
         indicatorp1.setEndX(0);
         indicatorp2.setEndY(0);
         indicatorp2.setEndX(0);
 
-        indicatorp1.setLayoutX(BA.getLayoutX() + 20);
+        indicatorp1.setLayoutX(BA.getLayoutX() + 20); //Flyt indikatorer til bananens nuværende position
         indicatorp1.setLayoutY(BA.getLayoutY() + 25);
         indicatorp2.setLayoutX(BA.getLayoutX() + 20);
         indicatorp2.setLayoutY(BA.getLayoutY() + 25);
