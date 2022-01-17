@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
-    public static final int CANVAS_X = 600 ,CANVAS_Y = 400;
+    public static int CANVAS_X,CANVAS_Y;
     public static Projectile proj = new Projectile(0,0);
     private static Player winner = new Player(-1,-1,"null");
     private static boolean winnerFound = false, player1HasTurn = true;
@@ -72,16 +72,33 @@ public class GameController implements Initializable {
     private AnchorPane anchorPane;
     public int blockHeight = 16;
     public int blockWidth = 72;
-    public int maxHeight = 8;
-    public int minHeight = 2;
+    public int maxHeight;
+    public int minHeight;
     public Color[] buildingColors = {Color.DARKTURQUOISE, Color.INDIANRED, Color.LIGHTGREY};
     public static Building[] buildings;
     ArrayList<Object> blokke = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //setup tur
+        CANVAS_X = StartController.sizeX;
+        CANVAS_Y = StartController.sizeY;
+        maxHeight = CANVAS_Y/50;
+        minHeight = CANVAS_Y/200;
+        int num = CANVAS_X / 2 - 20;
+        //setup labels placeringer
+        namePlayer2.setLayoutX(CANVAS_X-50);
+        player2point.setLayoutX(CANVAS_X-20);
+        visualwinddir.setLayoutX(num);
+        visualwindforce.setLayoutX(num);
+        visualangle.setLayoutX(num);
+        visualvelocity.setLayoutX(num);
+        angle.setLayoutX(num);
+        anglelabel.setLayoutX(angle.getLayoutX()-40);
+        velocity.setLayoutX(num);
+        velocitylabel.setLayoutX(velocity.getLayoutX()-60);
+        throwbtn.setLayoutX(angle.getLayoutX()+175);
 
+        //setup tur
         player1HasTurn = true;
         proj = new Projectile(0,0);
         winner = new Player(-1,-1,"null");
@@ -178,15 +195,19 @@ public class GameController implements Initializable {
             buildings[i] = building;
         }
         // Sætter positioner af spiller sprites
-        abe1.setLayoutX(buildings[1].getX() + buildings[1].getWidth() / 2 - abe1.getFitWidth() / 2);
-        abe1.setLayoutY(CANVAS_Y - (buildings[1].getHeight() + abe1.getFitHeight()));
-        abe2.setLayoutX(buildings[7].getX() + buildings[7].getWidth() / 2 - abe2.getFitWidth() / 2);
-        abe2.setLayoutY(CANVAS_Y - (buildings[7].getHeight() + abe2.getFitHeight()));
+
+        int p1 = r.nextInt(buildings.length/2);
+        int p2 = r.nextInt(buildings.length - 1 - buildings.length/2 ) + buildings.length/2;
+
+        abe1.setLayoutX(buildings[p1].getX() + buildings[p1].getWidth() / 2 - abe1.getFitWidth() / 2);
+        abe1.setLayoutY(CANVAS_Y - (buildings[p1].getHeight() + abe1.getFitHeight()));
+        abe2.setLayoutX(buildings[p2].getX() + buildings[p2].getWidth() / 2 - abe2.getFitWidth() / 2);
+        abe2.setLayoutY(CANVAS_Y - (buildings[p2].getHeight() + abe2.getFitHeight()));
         // Sætter positioner af spillere
         player1.setX(abe1.getLayoutX() + abe1.getFitWidth() / 2);
-        player1.setY(buildings[1].getHeight() + abe1.getFitHeight() / 2);
+        player1.setY(buildings[p1].getHeight() + abe1.getFitHeight() / 2);
         player2.setX(abe2.getLayoutX() + abe2.getFitWidth() / 2);
-        player2.setY(buildings[7].getHeight() + abe2.getFitHeight() / 2);
+        player2.setY(buildings[p2].getHeight() + abe2.getFitHeight() / 2);
         // Sætter position af projektil
         proj.setX(player1.getX());
         proj.setY(player1.getY());
@@ -398,14 +419,6 @@ public class GameController implements Initializable {
                     // Kollision med bygning
                     for (int i = 0; i < buildings.length; i++) {
                         if (buildings[i].collision(proj)) {
-
-                            //Andreas - Computer laver nye gæt, hvis det sidste gæt rammer en bygning
-                            if(player1HasTurn){
-                                computer1.calculateNewMoves();
-                            } else {
-                                computer2.calculateNewMoves();
-                            }
-
                             buildingHit = true;
                             System.out.println("Ramt bygning " + i);
                             rotationBanan.stop();
@@ -461,6 +474,16 @@ public class GameController implements Initializable {
                 rotationBanan.play();
             }
         }
+
+        //Andreas - Computer laver nye gæt når alle gæt er brugt
+        if(player1HasTurn){
+            computer1.calculateNewMoves();
+        } else {
+            computer2.calculateNewMoves();
+        }
+
+
+
     }
 
     //Andreas
@@ -539,7 +562,6 @@ public class GameController implements Initializable {
         indicatorp2.setLayoutY(BA.getLayoutY() + 25);
     }
 
-
     // Markus
     // Animation af eksplosion af bygning (ændrer ikke bygnings hitbox)
     public void explosion(double x, double y) {
@@ -593,7 +615,6 @@ public class GameController implements Initializable {
         explosionAnimation.play();
     }
 
-    
 /*
     final Image[] deathAnimationImages = new Image[] {};
 
@@ -654,4 +675,3 @@ public void handle(ActionEvent event) {
     }
     */
 }
-
