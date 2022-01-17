@@ -282,7 +282,6 @@ public class GameController implements Initializable {
             }else {
                 abe2.setImage(normal);
             }
-
         }
     });
         animationline.setCycleCount(1);
