@@ -570,6 +570,7 @@ public class GameController implements Initializable {
         int cycles = 40;
 
         /*
+        // TODO: Lav eventuelt en liste med alle 'c' objekter og tjek om de er kollision med både et 'c' objekt og bygning samtidig - hvis sandt, så ignorer. (Til efter rapport)
         // Tegn hul i bygning (skal være samme farve som baggrund)
         Circle c = new Circle();
         c.setCenterX(x);
@@ -614,64 +615,4 @@ public class GameController implements Initializable {
         explosionAnimation.getKeyFrames().add(explosionKeyframe);
         explosionAnimation.play();
     }
-
-/*
-    final Image[] deathAnimationImages = new Image[] {};
-
-final ImageView character = new ImageView("Kast.png");
-
-        Duration frameDuration = Duration.seconds(1d / deathAnimationImages.length);
-        Timeline deathAnimation = new Timeline(new KeyFrame(frameDuration, new EventHandler<ActionEvent>() {
-private int index = 0;
-
-@Override
-public void handle(ActionEvent event) {
-        character.setImage(deathAnimationImages[index]);
-        index++;
-        }
-        }));
-        deathAnimation.setCycleCount(deathAnimationImages.length);
-        deathAnimation.play();
-*/
-
-/*
-    //bedre version af simulateProjectile
-    public void simulate(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException {
-
-        //gæt
-        System.out.println();
-        Guess guess = new Guess((int) ANGLE_IN_DEGREES, VELOCITY);
-        boolean hit = Computer.playerIsHit(shootingPlayer,targetPlayer,guess);
-        if (hit){
-            shootingPlayer.addPoint(1);
-            System.out.println(targetPlayer.getName() + " is hit!");
-            player1point.setText(Integer.toString(player1.getPoint()));
-            player2point.setText(Integer.toString(player2.getPoint()));
-        }
-
-        //Christian
-        //sætter pos af billede til projectile Pos
-        BA.setX(projectile.getLayoutX()-100);
-        BA.setY(projectile.getLayoutY()-290);
-
-        //status på point
-        //System.out.println("v:" + Math.abs(VELOCITY) + " a:" + Math.abs(ANGLE_IN_DEGREES));
-        pointStatus(player1);
-        pointStatus(player2);
-
-        //tjekker om vinder er fundet
-        if (winnerFound){
-            System.out.println(winner.getName() + " har vundet!");
-            GameApplication.setStage("gameover-screen.fxml");
-        } else{
-            //skifte tur
-            if (player1HasTurn){
-                player1HasTurn = false;
-            } else {
-                player1HasTurn = true;
-            }
-            System.out.println(targetPlayer.getName() + " har tur!");
-        }
-    }
-    */
 }
