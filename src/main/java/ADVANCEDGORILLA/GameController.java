@@ -71,7 +71,7 @@ public class GameController implements Initializable {
     public int blockHeight = 16;
     public int blockWidth = 72;
     public int maxHeight;
-    public int minHeight = 1;
+    public int minHeight;
     public Color[] buildingColors = {Color.DARKTURQUOISE, Color.INDIANRED, Color.LIGHTGREY};
     public static Building[] buildings;
     ArrayList<Object> blokke = new ArrayList<>();
@@ -81,6 +81,7 @@ public class GameController implements Initializable {
         CANVAS_X = StartController.sizeX;
         CANVAS_Y = StartController.sizeY;
         maxHeight = CANVAS_Y/50;
+        minHeight = CANVAS_Y/200;
         int num = CANVAS_X / 2 - 20;
         //setup labels placeringer
         namePlayer2.setLayoutX(CANVAS_X-50);
