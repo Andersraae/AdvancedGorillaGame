@@ -39,6 +39,11 @@ public class StartController implements Initializable {
     private ComboBox ComboBoxPlayer1AI, ComboBoxPlayer2AI;
     public static int player1AI,player2AI;
 
+    @FXML
+    private TextField TextSizeX, TextSizeY;
+    public static int sizeX,sizeY;
+    private int minX = 200, minY = 200;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ComboBoxPlayer1AI.getItems().addAll("off",1,2,3,4,5);
@@ -52,8 +57,8 @@ public class StartController implements Initializable {
             setValues(); // evaluerer datainput
 
             //Hverken antal runder eller gravity må være negativ
-            if (PlayingTo > 0 && gravity > 0){
-                GameApplication.setStage("game-view.fxml");
+            if (PlayingTo > 0 && gravity > 0 && sizeX >= minX && sizeY >= minY){
+                GameApplication.setStage("game-view.fxml",sizeX,sizeY);
             }
 
         } catch (Exception e){
@@ -61,10 +66,27 @@ public class StartController implements Initializable {
         }
     }
 
+    public void setupStageSize(){
+        try{
+            sizeX = Integer.parseInt(TextSizeX.getText());
+            sizeY = Integer.parseInt(TextSizeY.getText());
+        } catch (Exception e){
+            if (TextSizeX.getText().length() == 0){
+                sizeX = 600;
+            }
+
+            if(TextSizeY.getText().length() == 0){
+                sizeY = 400;
+            }
+        }
+    }
+
     //Andreas
     //Tjekker de indtastede værdier og ser om de er efterladt tomme
     //Hvis et felt er tomt, vil de blive sat til standardværdier
     public void setValues(){
+
+        setupStageSize();
 
         //Sæt spillernavne
         if (TextNamePlayer1.getText().length() == 0){

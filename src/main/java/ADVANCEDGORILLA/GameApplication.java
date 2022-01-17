@@ -40,6 +40,20 @@ public class GameApplication extends Application{
         currentStage = stage;
     }
 
+    //Kaldes når der skal skiftes scene
+    //Sætter scenen til den fxml fil der har parameteren som filnavn
+    //sætter også scenen til størrelsen (x,y)
+    public static void setStage(String resource, int x, int y) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(GameApplication.class.getResource(resource));
+        Stage stage = new Stage();
+        Scene scene = new Scene(fxmlLoader.load(), x, y);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+        closeStageIfNotFirst();
+        currentStage = stage;
+    }
+
     //Sørger for at den første scene ikke lukker med det samme
     public static void closeStageIfNotFirst(){
         if (firstStage == true){
