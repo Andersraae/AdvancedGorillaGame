@@ -273,9 +273,6 @@ public class GameController implements Initializable {
         Image normal = new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\gorilla.png");
         Timeline  animationline = new Timeline();
 
-
-
-
         KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
@@ -297,19 +294,6 @@ public class GameController implements Initializable {
         animationline.getKeyFrames().add(keyFrame1);
         animationline.play();
 
-        /*
-    abe1.setImage(null);
-    abe1.setImage(new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\Kast.png"));
-    abe1.setFitHeight(85);
-    abe1.setFitWidth(65);
-    abe1.setLayoutX(abe1.getLayoutX());
-    abe1.setLayoutY(abe1.getLayoutY());
-    // vent tid idk???
-    //Duration.seconds(1);
-   // abe1.setImage(new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\gorilla.png"));
-   // abe1.setFitHeight(50);
-   // abe1.setFitWidth(40);
-*/
     }
 
     //Anders
