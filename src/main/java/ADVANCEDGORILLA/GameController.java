@@ -1,82 +1,85 @@
 package ADVANCEDGORILLA;
+
 import javafx.animation.*;
+
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+
 import javafx.fxml.Initializable;
+import javafx.fxml.FXML;
+
+import java.net.URL;
+
+import java.io.IOException;
+
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Line;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
-import javafx.util.Duration;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
-import java.io.IOException;
-import java.net.URL;
+import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
 
 public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
     public static int CANVAS_X,CANVAS_Y;
     public static Projectile proj = new Projectile(0,0);
-    private static Player winner = new Player(-1,-1,"null");
-    private static boolean winnerFound = false, player1HasTurn = true;
+    public static Player winner = new Player(-1,-1,"null");
+    public static boolean winnerFound = false, player1HasTurn = true;
 
     //Variable fra startScreen
-    private static int FirstTo = StartController.PlayingTo;
+    public static int FirstTo = StartController.PlayingTo;
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     public static double g = StartController.gravity;
+    public static final boolean manuelKast = StartController.manuelKast;
 
     //AI
     public Computer computer1, computer2;
 
     //variable fra game-view ift point og navne
-    @FXML
     public Label namePlayer1, namePlayer2,player1point, player2point;
 
-    public boolean Executed = false;
-    public ImageView abe1, abe2, BA, abeKast;
+    //Visuelt/Animation
+    public ImageView abe1, abe2, BA;
+    public Timeline  animationline = new Timeline();
+    public Image kast = new Image(String.valueOf(GameApplication.class.getResource("Kast.png")));
+    public Image normal = new Image(String.valueOf(GameApplication.class.getResource("gorilla.png")));
 
     //Manuel kast
     public TextField angle, velocity;
     public Label anglelabel, velocitylabel;
     public Button throwbtn;
-    private static boolean manuelKast = StartController.manuelKast;
 
     //Visuel kast
-    public Line indicatorp1, indicatorp2;
-    public Label visualangle, visualvelocity;
+    public Line indicatorp1, indicatorp2; //Hver spiller har en indikator, da farve gradient ikke kunne passes til ordentligt
+    public Label visualangle, visualvelocity; //Tekst til at vise vinkel og hastighed i spil-vinduet
     public double xdiff,ydiff,throwvelocity,throwangledeg,displayangle;
-    public boolean hasthrown = false; //Begrænser
+    public boolean hasthrown = false;
 
     //Vind
     public static double winddirection, windforce;
     public Label visualwinddir,visualwindforce;
 
     //Terræn
-    @FXML
-    private AnchorPane anchorPane;
+    public AnchorPane anchorPane;
     public int blockHeight = 16;
     public int blockWidth = 72;
     public int maxHeight;
     public int minHeight;
     public Color[] buildingColors = {Color.DARKTURQUOISE, Color.INDIANRED, Color.LIGHTGREY};
     public static Building[] buildings;
-    ArrayList<Object> blokke = new ArrayList<>();
+    public ArrayList<Object> blokke = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -85,6 +88,7 @@ public class GameController implements Initializable {
         maxHeight = CANVAS_Y/50;
         minHeight = CANVAS_Y/200;
         int num = CANVAS_X / 2 - 20;
+
         //setup labels placeringer
         namePlayer2.setLayoutX(CANVAS_X-50);
         player2point.setLayoutX(CANVAS_X-20);
@@ -142,7 +146,8 @@ public class GameController implements Initializable {
         }
     }
 
-    //opdaterer vinden
+    //Anders
+    //Opdaterer vinden
     public void updateWind(){
         windforce = Wind.changeWindForce();
         winddirection = Wind.changeWindDirection();
@@ -230,34 +235,37 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseMove(MouseEvent event){
-        if (!manuelKast){
-            xdiff = event.getX() - BA.getLayoutX();
-            ydiff = BA.getLayoutY() - event.getY();
-            throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
-            throwangledeg = Math.toDegrees(Math.acos(xdiff/throwvelocity));
+        if (!manuelKast){ //Hvis brugeren har valgt 'det visuelle kast'
+            xdiff = event.getX() - BA.getLayoutX(); //Forskellen fra bananens position til musen i x aksen
+            ydiff = BA.getLayoutY() - event.getY(); //Og y aksen
+            throwvelocity = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2)); //Pixels mellem bananen og musen
+            throwangledeg = Math.toDegrees(Math.acos(xdiff/throwvelocity)); //Vinklen mellem banan og mus
             displayangle = throwangledeg;
 
             if (ydiff < 0){ //Hvis man peger musen under bananens position på y aksen
                 displayangle = - throwangledeg;
             }
 
-            if (!player1HasTurn){
-                displayangle = 180 - throwangledeg;
+            if (!player1HasTurn){ //Gør så vinklen vises mod spiller 1 fra spiller 2's perspektiv
+                if (ydiff < 0) {
+                    displayangle = throwangledeg - 180;
+                } else {
+                    displayangle = 180 - throwangledeg;
+                }
             }
 
             throwvelocity /= 2; //Gør det nemmere at styre hastigheden
 
-            if (!hasthrown){
-                visualangle.setText("Vinkel: " + round(displayangle));
+            if (!hasthrown){ //Så længe brugeren ikke har kastet
+                visualangle.setText("Vinkel: " + round(displayangle)); //Skriv vinklen og hastigheden i spil-vinduet
                 visualvelocity.setText("Hastighed: " + round(throwvelocity));
             }
 
-
             if (player1HasTurn){
-                indicatorp1.setEndX(xdiff/2);
+                indicatorp1.setEndX(xdiff/2); //Lad spiller 1's indikator følge musen
                 indicatorp1.setEndY(-ydiff/2);
             } else {
-                indicatorp2.setEndX(xdiff/2);
+                indicatorp2.setEndX(xdiff/2); //Samme for spiller 2
                 indicatorp2.setEndY(-ydiff/2);
             }
         }
@@ -267,40 +275,72 @@ public class GameController implements Initializable {
     //Til visuelt kast
     @FXML
     private void onMouseClick(MouseEvent event) throws IOException, InterruptedException {
-        if (!manuelKast){
-
-            //Tur
-            if(player1HasTurn){ //player 1 har tur
-                if(player1.isComputer()){
-                    Guess guess = computer1.getNextMove();
-                    animateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
+        if (!manuelKast){ //Hvis brugeren har valgt 'det visuelle kast'
+            if(player1HasTurn){ //Spiller 1 har tur
+                if(player1.isComputer()){ //Tjekker om spilleren er sat til at være computer
+                    Guess guess = computer1.getNextMove();  //Computeren gætter
+                    animateProjectile(player1, guess.getAngle(), guess.getVelocity()); //Og kaster
                 } else {
-                    animateProjectile(player1, player2, displayangle, throwvelocity);
+                    animateProjectile(player1, displayangle, throwvelocity); //Ellers bruges brugerens kast
                 }
-            } else { //player 2 har tur
+            } else { //Spiller 2 har tur (Samme forløb som for spiller 1)
                 if(player2.isComputer()){
                     Guess guess = computer2.getNextMove();
-                    animateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
+                    animateProjectile(player2, -guess.getAngle(), -guess.getVelocity()); //Bruger negative kast og hastigheder, da kastet er den modsatte vej
                 } else {
-                    animateProjectile(player2, player1, -displayangle, -throwvelocity);
+                    animateProjectile(player2, -displayangle, -throwvelocity);
                 }
             }
         }
     }
 
+    //Anders
+    //Til kast knappen
+    public void kast() throws IOException, InterruptedException {
+        //Skriver navnet i spil-vinduet
+        namePlayer1.setText(player1.getName());
+        namePlayer2.setText(player2.getName());
+        try {
+            double numangle, numvelocity;
+            //Tjekker tur på samme måde som i 'onMouseClick()'
+            if(player1HasTurn){
+                if(player1.isComputer()){
+                    Guess guess = computer1.getNextMove();
+                    animateProjectile(player1, guess.getAngle(), guess.getVelocity());
+                } else {
+                    numangle = Double.parseDouble(angle.getText()); //Bruger værdierne fra tekst felterne
+                    numvelocity = Double.parseDouble(velocity.getText());
+                    animateProjectile(player1, numangle, numvelocity);
+                }
+            } else {
+                if(player2.isComputer()){
+                    Guess guess = computer2.getNextMove();
+                    animateProjectile(player2, -guess.getAngle(), -guess.getVelocity());
+                } else {
+                    numangle = Double.parseDouble(angle.getText());
+                    numvelocity = Double.parseDouble(velocity.getText());
+                    animateProjectile(player2, -numangle, -numvelocity);
+                }
+            }
+
+            //Fjerner indtastede værdier fra sidste spiller
+            angle.clear();
+            velocity.clear();
+
+            resetImage();
+        } catch (Exception e){
+            System.out.println(e); //Hvis fejl forekommer, print fejlen
+        }
+    }
+
     //Christian
     public void animationKast() throws InterruptedException {
-        System.out.println(abe1.getImage().getUrl());
-        Image kast = new Image(String.valueOf(GameApplication.class.getResource("Kast.png")));
-        Image normal = new Image(String.valueOf(GameApplication.class.getResource("gorilla.png")));
-        Timeline  animationline = new Timeline();
-
-        KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() {
+        KeyFrame resetframe = new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
             if(player1HasTurn){
                 abe1.setImage(normal);
-            }else {
+            } else {
                 abe2.setImage(normal);
             }
         }
@@ -311,61 +351,19 @@ public class GameController implements Initializable {
         }else {
             abe2.setImage(kast);
         }
-
-        animationline.getKeyFrames().add(keyFrame1);
-        animationline.play();
-
-    }
-
-    //Anders
-    //Til kast knappen
-    public void kast() throws IOException, InterruptedException {
-        namePlayer1.setText(player1.getName());
-        namePlayer2.setText(player2.getName());
-        try {
-            double numangle, numvelocity;
-            //Tur
-            if(player1HasTurn){ //player 1 har tur
-                if(player1.isComputer()){
-                    Guess guess = computer1.getNextMove();
-                    animateProjectile(player1, player2, guess.getAngle(), guess.getVelocity());
-                } else {
-                    numangle = Double.parseDouble(angle.getText());
-                    numvelocity = Double.parseDouble(velocity.getText());
-                    animateProjectile(player1, player2, numangle, numvelocity);
-                }
-            } else { //player 2 har tur
-                if(player2.isComputer()){
-                    Guess guess = computer2.getNextMove();
-                    animateProjectile(player2, player1, -guess.getAngle(), -guess.getVelocity());
-                } else {
-                    numangle = Double.parseDouble(angle.getText());
-                    numvelocity = Double.parseDouble(velocity.getText());
-                    animateProjectile(player2, player1, -numangle, -numvelocity);
-                }
-            }
-
-            //Fjerner værdier fra sidste spiller
-            angle.clear();
-            velocity.clear();
-
-            resetImage();
-        } catch (Exception e){
-            System.out.println(e);
-        }
+        animationline.getKeyFrames().add(resetframe);
     }
 
     //Andreas (Udregningen)
     //Christian (Animation)
     //Anders (Omskrevet udregning til animation og implementeret eksisterende animationer)
-    public void animateProjectile(Player shootingPlayer, Player targetPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
+    public void animateProjectile(Player shootingPlayer, double ANGLE_IN_DEGREES, double VELOCITY) throws IOException, InterruptedException{
         //Christian
         //rotation af banan :)
-        animationKast();
         RotateTransition rotationBanan = new RotateTransition();
-        rotationBanan.setCycleCount(rotationBanan.INDEFINITE);
+        rotationBanan.setCycleCount(rotationBanan.INDEFINITE); //Fortsæt rotation
         rotationBanan.setByAngle(360);
-        rotationBanan.setInterpolator(Interpolator.LINEAR);
+        rotationBanan.setInterpolator(Interpolator.LINEAR); //Konstant rotation
         rotationBanan.setAutoReverse(false);
         rotationBanan.setNode(BA);
 
@@ -376,10 +374,8 @@ public class GameController implements Initializable {
         //Anders (Omskrivning) Andreas (Udregning)
         //Kurve animation
         Timeline throwanimation = new Timeline();
-        throwanimation.setCycleCount(Timeline.INDEFINITE);
-        int updatemillis = 20;
-        System.out.println("spiller pos: " + shootingPlayer);
-        KeyFrame bananakeyrframe = new KeyFrame(Duration.millis(updatemillis), new EventHandler<ActionEvent>() {
+        throwanimation.setCycleCount(Timeline.INDEFINITE); //Fortsætter animationen til den stopper
+        KeyFrame bananakeyrframe = new KeyFrame(Duration.millis(20), new EventHandler<ActionEvent>() {
             double angle = Math.toRadians(ANGLE_IN_DEGREES);
             double x = shootingPlayer.getX() - 40;
             double y = shootingPlayer.getY() - 10;
@@ -430,6 +426,12 @@ public class GameController implements Initializable {
                 if (y < 0 || x > CANVAS_X || x < 0 || playerHit || buildingHit){
                     throwanimation.stop();
                     rotationBanan.stop();
+                    animationline.stop();
+                    if(player1HasTurn){
+                        abe1.setImage(normal);
+                    } else {
+                        abe2.setImage(normal);
+                    }
 
                     // Check om spiller blev ramt
                     if (playerHit){
@@ -465,6 +467,9 @@ public class GameController implements Initializable {
             indicatorp1.setOpacity(0);
             indicatorp2.setOpacity(0);
 
+            animationKast();
+            animationline.play();
+
             hasthrown = true;
             if (player1HasTurn) {
                 rotationBanan.setRate(1);
@@ -481,9 +486,6 @@ public class GameController implements Initializable {
         } else {
             computer2.calculateNewMoves();
         }
-
-
-
     }
 
     //Andreas
