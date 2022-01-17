@@ -294,6 +294,7 @@ public class GameController implements Initializable {
 
         animationline.getKeyFrames().add(keyFrame1);
         animationline.play();
+
     }
 
     //Anders
