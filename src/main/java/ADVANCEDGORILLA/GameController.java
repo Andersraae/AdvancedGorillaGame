@@ -172,12 +172,12 @@ public class GameController implements Initializable {
         if (CANVAS_X % blockWidth != 0) arrLength++;
         buildings = new Building[arrLength];
 
-        // Tegn bygninger
+        // Tegner alle bygningerne, en ad gangen
         for (int i = 0; (i * blockWidth) < CANVAS_X; i++) {
             int height = r.nextInt(maxHeight - minHeight) + minHeight;
             int color = r.nextInt(buildingColors.length);
 
-            // Tegn en bygning
+            // Tegner en bygning ved at tegne flere rektangler ovenpå hinanden
             for (int j = 0; j <= height; j++) {
                 Rectangle block = new Rectangle();
                 block.setLayoutX(i * blockWidth);
@@ -188,7 +188,7 @@ public class GameController implements Initializable {
                 anchorPane.getChildren().add(block);
                 blokke.add(block);
 
-                // Tegn vinduer
+                // Tegner vinduer på den nuværende blok
                 for (int k = 0; k < 6; k++) {
                     Rectangle window = new Rectangle();
                     window.setLayoutX(i * blockWidth + (blockWidth / 6) * k + (blockWidth / 6) / 3);
@@ -209,7 +209,6 @@ public class GameController implements Initializable {
             buildings[i] = building;
         }
         // Sætter positioner af spiller sprites
-
         int p1 = r.nextInt(buildings.length/2);
         int p2 = r.nextInt(buildings.length - 1 - buildings.length/2 ) + buildings.length/2;
 
@@ -614,6 +613,7 @@ public class GameController implements Initializable {
                 }
             }
         });
+        // Tilføj keyframes og spil animation
         explosionAnimation.getKeyFrames().add(explosionKeyframe);
         explosionAnimation.play();
     }
