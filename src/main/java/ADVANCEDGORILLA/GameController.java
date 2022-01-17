@@ -269,12 +269,10 @@ public class GameController implements Initializable {
 
     //Christian
     public void animationKast() throws InterruptedException {
-        Image kast = new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\Kast.png");
-        Image normal = new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\gorilla.png");
+        System.out.println(abe1.getImage().getUrl());
+        Image kast = new Image(String.valueOf(GameApplication.class.getResource("Kast.png")));
+        Image normal = new Image(String.valueOf(GameApplication.class.getResource("gorilla.png")));
         Timeline  animationline = new Timeline();
-
-
-
 
         KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() {
         @Override
@@ -296,20 +294,6 @@ public class GameController implements Initializable {
 
         animationline.getKeyFrames().add(keyFrame1);
         animationline.play();
-
-        /*
-    abe1.setImage(null);
-    abe1.setImage(new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\Kast.png"));
-    abe1.setFitHeight(85);
-    abe1.setFitWidth(65);
-    abe1.setLayoutX(abe1.getLayoutX());
-    abe1.setLayoutY(abe1.getLayoutY());
-    // vent tid idk???
-    //Duration.seconds(1);
-   // abe1.setImage(new Image("C:\\Users\\rumle\\IdeaProjects\\AdvancedGorillaGame\\src\\main\\resources\\ADVANCEDGORILLA\\gorilla.png"));
-   // abe1.setFitHeight(50);
-   // abe1.setFitWidth(40);
-*/
     }
 
     //Anders
@@ -370,7 +354,6 @@ public class GameController implements Initializable {
 
         //Anders (Omskrivning) Andreas (Udregning)
         //Kurve animation
-        //TODO: Pas metoden til, så bananen ikke bare starter i 0,0
         Timeline throwanimation = new Timeline();
         throwanimation.setCycleCount(Timeline.INDEFINITE);
         int updatemillis = 20;
@@ -453,7 +436,6 @@ public class GameController implements Initializable {
                     pointStatus(player1);
                     pointStatus(player2);
 
-                    //Skifter tur og tjekker for vinder. Skal være sidst (!!)
                     try {
                         turnStatus();
                         resetImage();
