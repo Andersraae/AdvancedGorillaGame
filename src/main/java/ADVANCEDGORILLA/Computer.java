@@ -65,25 +65,30 @@ public class Computer{
         Guess move= this.moves.get(this.currentGuessCounter);
          if (this.currentGuessCounter + 1 < this.moves.size()){
             this.currentGuessCounter++;
+         } else {
+             //tøm tidligere liste og nulstil antallet af gæt og beregn nye gæt
+             this.calculateBetterMoves();
          }
          return move;
     }
 
     //computer har brugt alle sine gæt og laver nye gæt
     //kaldes når computeren rammer en bygning med sit sidste gæt
-    public void calculateNewMoves(){
-        if(this.currentGuessCounter + 1 >= this.moves.size()){
-            this.lowAngle = 45; // højere vinkel gør det mindre sandsynligt at ramme en bygning
-            this.moves.clear();
-            calulateMoves();
-            this.currentGuessCounter = 0;
-        }
+    public void calculateBetterMoves(){
+        this.lowAngle = 45; // højere vinkel gør det mindre sandsynligt at ramme en bygning
+        this.resetAndCalculate();
+    }
+
+    //tøm tidligere liste og nulstil antallet af gæt og beregn nye gæt
+    public void resetAndCalculate(){
+        this.moves.clear();
+        this.currentGuessCounter = 0;
+        this.calulateMoves();
     }
 
     //beregner alle de gæt der skal til for at ramme modspilleren
     //og føjer dem til listen moves
     public void calulateMoves(){
-
         //variabler
         Random random = new Random();
         int currentGuess = 1;
