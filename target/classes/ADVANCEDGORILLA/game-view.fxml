@@ -11,13 +11,9 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
-<?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onMouseClick" onMouseMoved="#onMouseMove" prefHeight="400.0" prefWidth="600.0" scaleShape="false" style="-fx-background-color: #57b6ff;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ADVANCEDGORILLA.GameController">
    <children>
-      <Rectangle fx:id="player1Hitbox" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" layoutX="0.0" layoutY="312.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
-      <Rectangle fx:id="player2Hitbox" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="88.0" layoutX="545.0" layoutY="312.0" opacity="0.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
-
       <!-- Indskriv manuelt værdier for kast -->
       <Button fx:id="throwbtn" layoutX="415.0" layoutY="30.0" mnemonicParsing="false" onAction="#kast" opacity="0" text="Kast" />
       <TextField fx:id="angle" layoutX="226.0" layoutY="13.0" opacity="0" />
