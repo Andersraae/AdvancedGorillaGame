@@ -413,8 +413,6 @@ public class GameController implements Initializable {
                         if (buildings[i].collision(proj)) {
                             buildingHit = true;
                             System.out.println("Ramt bygning " + i);
-                            rotationBanan.stop();
-                            throwanimation.stop();
                         }
                     }
                 }
