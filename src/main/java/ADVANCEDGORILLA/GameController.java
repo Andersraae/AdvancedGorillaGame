@@ -421,6 +421,12 @@ public class GameController implements Initializable {
                     rotationBanan.stop();
                     gorillathrow.stop();
 
+                    if(player1HasTurn){ //Resetter gorilla billedet
+                        abe1.setImage(normal);
+                    } else {
+                        abe2.setImage(normal);
+                    }
+
                     // Check om spiller blev ramt
                     if (playerHit){
                         shootingPlayer.addPoint(1);
@@ -527,11 +533,9 @@ public class GameController implements Initializable {
         if(player1HasTurn){
             BA.setLayoutX(player1.getX() - BA.getFitWidth() / 2);
             BA.setLayoutY(CANVAS_Y - player1.getY() - BA.getFitHeight() / 2);
-            abe1.setImage(normal);
         }else{
             BA.setLayoutX(player2.getX() - BA.getFitWidth() / 2);
             BA.setLayoutY(CANVAS_Y - player2.getY() - BA.getFitHeight() / 2);
-            abe2.setImage(normal);
         }
         resetIndicators();
     }
