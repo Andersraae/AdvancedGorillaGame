@@ -52,7 +52,7 @@ public class GameController implements Initializable {
 
     //Visuelt/Animation
     public ImageView abe1, abe2, BA;
-    public Timeline  throwanimation = new Timeline();
+    public Timeline gorillathrow = new Timeline();
     public RotateTransition rotationBanan = new RotateTransition();
     public Image kast = new Image(String.valueOf(GameApplication.class.getResource("Kast.png")));
     public Image normal = new Image(String.valueOf(GameApplication.class.getResource("gorilla.png")));
@@ -354,13 +354,13 @@ public class GameController implements Initializable {
             }
         }
     });
-        throwanimation.setCycleCount(1);
+        gorillathrow.setCycleCount(1);
         if (player1HasTurn) {
             abe1.setImage(kast);
         }else {
             abe2.setImage(kast);
         }
-        throwanimation.getKeyFrames().add(resetframe);
+        gorillathrow.getKeyFrames().add(resetframe);
     }
 
     //Andreas (Udregningen)
@@ -419,7 +419,7 @@ public class GameController implements Initializable {
                 if (y < 0 || x > CANVAS_X || x < 0 || playerHit || buildingHit){
                     throwanimation.stop(); //Stopper alle animationerne til kastet
                     rotationBanan.stop();
-                    throwanimation.stop();
+                    gorillathrow.stop();
 
                     if(player1HasTurn){ //Resetter gorilla billedet
                         abe1.setImage(normal);
@@ -465,7 +465,7 @@ public class GameController implements Initializable {
             indicatorp2.setOpacity(0);
 
             animationKast();
-            throwanimation.play(); //Start animation af abe der kaster
+            gorillathrow.play(); //Start animation af abe der kaster
 
             if (player1HasTurn) {
                 rotationBanan.setRate(1); //Roter banan i positiv omløbsretning
