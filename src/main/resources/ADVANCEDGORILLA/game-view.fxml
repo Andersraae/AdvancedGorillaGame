@@ -9,7 +9,6 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
-<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onMouseClick" onMouseMoved="#onMouseMove" prefHeight="400.0" prefWidth="600.0" scaleShape="false" style="-fx-background-color: #57b6ff;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ADVANCEDGORILLA.GameController">
@@ -21,10 +20,6 @@
       <Label fx:id="anglelabel" layoutX="159.0" layoutY="17.0" opacity="0" text="Vinkel" />
       <Label fx:id="velocitylabel" layoutX="159.0" layoutY="46.0" opacity="0" text="Hastighed" />
       <!-- Indskriv manuelt værdier for kast -->
-
-      <!-- Projektil -->
-      <Circle fx:id="projectile" fill="YELLOW" layoutY="356" opacity="0.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
-      <!-- Projektil -->
 
       <!-- Spiller/Point -->
       <Label fx:id="namePlayer1" text="Spiller 1" />
