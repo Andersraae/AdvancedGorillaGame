@@ -36,14 +36,8 @@
       <!-- Visuel kast data -->
       <!-- Aber -->
       <ImageView fx:id="abe1" fitHeight="50.0" fitWidth="40.0" layoutX="-1.0" layoutY="312.0" pickOnBounds="true" preserveRatio="false">
-         <image>
-            <Image url="@Gorilla.png" />
-         </image>
       </ImageView>
       <ImageView fx:id="abe2" fitHeight="50.0" fitWidth="40.0" layoutX="513.0" layoutY="307.0" pickOnBounds="true" preserveRatio="false">
-         <image>
-            <Image url="@Gorilla.png" />
-         </image>
       </ImageView>
 
 
@@ -92,9 +86,6 @@
       <!-- Tekst -->
       <!-- Banan -->
       <ImageView fx:id="BA" fitHeight="40.0" fitWidth="75.0" layoutX="75.0" layoutY="267.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@BA%20-%20Kopi.PNG" />
-         </image>
       </ImageView>
       <!-- Banan -->
       <!-- Visuel kast data -->

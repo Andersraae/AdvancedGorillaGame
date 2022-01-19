@@ -56,6 +56,7 @@ public class GameController implements Initializable {
     public RotateTransition rotationBanan = new RotateTransition();
     public Image kast = new Image(String.valueOf(GameApplication.class.getResource("Kast.png")));
     public Image normal = new Image(String.valueOf(GameApplication.class.getResource("gorilla.png")));
+    public Image banan = new Image(String.valueOf(GameApplication.class.getResource("BA - Kopi.PNG")));
 
     //Manuel kast
     public TextField angle, velocity;
@@ -120,7 +121,11 @@ public class GameController implements Initializable {
         //vind og terræn
         updateWind();
         generateTerrain();
+
         resetImage();
+        abe1.setImage(normal);
+        abe2.setImage(normal);
+        BA.setImage(banan);
 
         // Andreas
         // setup computer
