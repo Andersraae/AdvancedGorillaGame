@@ -84,13 +84,15 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        //setup skærmstørrelse
         CANVAS_X = StartController.sizeX;
         CANVAS_Y = StartController.sizeY;
         maxHeight = CANVAS_Y/50;
         minHeight = CANVAS_Y/200;
-        int num = CANVAS_X / 2 - 20;
 
         //setup labels placeringer
+        int num = CANVAS_X / 2 - 20;
         namePlayer2.setLayoutX(CANVAS_X-50);
         player2point.setLayoutX(CANVAS_X-20);
         visualwinddir.setLayoutX(num);
@@ -103,7 +105,7 @@ public class GameController implements Initializable {
         velocitylabel.setLayoutX(velocity.getLayoutX()-60);
         throwbtn.setLayoutX(angle.getLayoutX()+175);
 
-        //setup tur
+        //setup spillere og tur
         player1HasTurn = true;
         proj = new Projectile(0,0);
         winner = new Player(-1,-1,"null");
@@ -111,7 +113,6 @@ public class GameController implements Initializable {
         FirstTo = StartController.PlayingTo;
         player1 = new Player(0, 0, StartController.namePlayer1);
         player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-        g = StartController.gravity;
 
         //navne
         namePlayer1.setText(player1.getName());
@@ -482,13 +483,6 @@ public class GameController implements Initializable {
                 rotationBanan.play();
             }
         }
-
-        //Andreas - Computer laver nye gæt når alle gæt er brugt
-//        if(player1HasTurn){
-//            computer1.calculateBetterMoves();
-//        } else {
-//            computer2.calculateBetterMoves();
-//        }
     }
 
     //Andreas
