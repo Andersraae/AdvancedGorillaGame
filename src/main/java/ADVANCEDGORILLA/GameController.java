@@ -385,7 +385,7 @@ public class GameController implements Initializable {
 
             @Override
             public void handle(ActionEvent event) {
-                realtime += throwanimation.getCurrentTime().toSeconds() * 20; //Hvor langt tid der er gået af animationen (Ganges for at gøre animationen hurtigere)
+                realtime += throwanimation.getCurrentTime().toSeconds() * 10; //Hvor langt tid der er gået af animationen (Ganges for at gøre animationen hurtigere)
 
                 x = startX + VELOCITY * realtime * Math.cos(angle); //Regner x værdi
                 y = startY + (VELOCITY * realtime * Math.sin(angle) - 0.5 * g * realtime * realtime); //Og y værdi
