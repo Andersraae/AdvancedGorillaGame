@@ -36,8 +36,8 @@ public class GameApplication extends Application{
         stage.setResizable(false);
         stage.show();
 
-        closeStageIfNotFirst();
-        currentStage = stage;
+        closeStageIfNotFirst(); // lukker scenen, når en ny åbnes
+        currentStage = stage; // nuværende scene som lige er åbnet
     }
 
     //Kaldes når der skal skiftes scene

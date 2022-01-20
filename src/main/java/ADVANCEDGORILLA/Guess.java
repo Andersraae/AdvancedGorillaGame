@@ -9,8 +9,8 @@ package ADVANCEDGORILLA;
 //******************************************************
 
 public class Guess {
-    protected int angle;
-    protected double velocity;
+    protected int angle; // gættets vinkel
+    protected double velocity; // gættets hastighed
 
     //konstruktør
     public Guess(int a, double v){

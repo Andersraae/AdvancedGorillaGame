@@ -20,16 +20,16 @@ import java.util.Random;
 public class Computer{
 
     //klassevariable
-    private Player shooter;
-    private Player target;
-    private ArrayList<Guess> moves;
-    private int currentGuessCounter;
-    private int difficulty;
-    private static double g = GameController.g;
-    private int val;
-    public static double dy;
-    private int lowAngle;
-    private static int highestAngle = 89;
+    private Player shooter; // spillerens der skyder
+    private Player target; // spillerens der rammes
+    private ArrayList<Guess> moves; // liste med computerens gæt
+    private int currentGuessCounter; // comupterens gæt nummer
+    private int difficulty; // computerens sværhedsgrad
+    private static double g = GameController.g; // den valgte tyngdeacceleration
+    private int val; // 1 når spiller er i venstre side, -1 når spiller er i højre side
+    public static double dy; // forskel i bananens og target y-værdi
+    private int lowAngle; // den mindse vinkel computeren kan gætte på
+    private static int highestAngle = 89; // den højeste vinkel computeren kan gætte på
 
     //konstruktør
     public Computer(Player shooter, Player target){
@@ -175,6 +175,6 @@ public class Computer{
         int x = (int) (this.target.getX() - this.shooter.getX());
         int y = (int) (-g/(2*v0*v0*Math.cos(a)*Math.cos(a))*x*x+Math.tan(a)*x);
         double l = Math.sqrt(y*y) - Math.abs(dy);
-        return l <= 12;
+        return l <= 12; // true når bananen er indenfor 12 pixels af modspilleren
     }
 }

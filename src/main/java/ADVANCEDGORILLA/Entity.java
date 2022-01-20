@@ -11,8 +11,8 @@ package ADVANCEDGORILLA;
 //***********************************************************
 public class Entity {
 
-    private double x;
-    private double y;
+    private double x; // entity x-koordinat
+    private double y; // entity y-koordinat
     public Entity(double x, double y) {
         this.x = x;
         this.y = y;
