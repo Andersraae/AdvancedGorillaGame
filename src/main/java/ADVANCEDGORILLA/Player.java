@@ -10,9 +10,9 @@ package ADVANCEDGORILLA;
 //*****************************************************
 
 public class Player extends Entity{
-    protected String name;
-    protected int point;
-    protected boolean isComputer;
+    protected String name; // spillerens navn
+    protected int point; // spillerens antal point
+    protected boolean isComputer; // true når spilleren erstattes af computer
 
     public Player(int x, int y, String name){
         super(x,y);

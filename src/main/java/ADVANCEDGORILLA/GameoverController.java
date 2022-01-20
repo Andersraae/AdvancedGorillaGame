@@ -22,6 +22,7 @@ public class GameoverController implements Initializable {
     @FXML
     private Label labelPlayer1, labelPlayer2; //label til spillernes navne og score
 
+    //initialize opsætter slutstillingen
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         labelPlayer1.setText(GameController.player1.getName() + ": \t" + GameController.player1.getPoint());
@@ -30,6 +31,6 @@ public class GameoverController implements Initializable {
 
     //lukker vinduet og åbner startskærmen, hvor spilleren kan starte det næste spil
     public void reset() throws IOException {
-        GameApplication.setStage("start-screen.fxml");
+        GameApplication.setStage("start-screen.fxml"); // sætter scenen til startscenen
     }
 }

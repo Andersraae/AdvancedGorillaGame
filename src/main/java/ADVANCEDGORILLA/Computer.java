@@ -20,16 +20,16 @@ import java.util.Random;
 public class Computer{
 
     //klassevariable
-    private Player shooter;
-    private Player target;
-    private ArrayList<Guess> moves;
-    private int currentGuessCounter;
-    private int difficulty;
-    private static double g = GameController.g;
-    private int val;
-    public static double dy;
-    private int lowAngle;
-    private static int highestAngle = 89;
+    private Player shooter; // spillerens der skyder
+    private Player target; // spillerens der rammes
+    private ArrayList<Guess> moves; // liste med computerens gæt
+    private int currentGuessCounter; // comupterens gæt nummer
+    private int difficulty; // computerens sværhedsgrad
+    private static double g = GameController.g; // den valgte tyngdeacceleration
+    private int val; // 1 når spiller er i venstre side, -1 når spiller er i højre side
+    public static double dy; // forskel i bananens og target y-værdi
+    private int lowAngle; // den mindse vinkel computeren kan gætte på
+    private static int highestAngle = 89; // den højeste vinkel computeren kan gætte på
 
     //konstruktør
     public Computer(Player shooter, Player target){
@@ -75,14 +75,23 @@ public class Computer{
     //computer har brugt alle sine gæt og laver nye gæt
     //kaldes når computeren rammer en bygning med sit sidste gæt
     public void calculateBetterMoves(){
-        this.lowAngle = 45; // højere vinkel gør det mindre sandsynligt at ramme en bygning
-        this.resetAndCalculate();
+
+        this.lowAngle += 20; // højere vinkel gør det mindre sandsynligt at ramme en bygning
+
+        if (this.lowAngle > 80){
+            this.lowAngle = 80;
+        }
+
+        this.moves.clear();
+        this.currentGuessCounter = 0;
+        this.calulateMoves();
     }
 
     //tøm tidligere liste og nulstil antallet af gæt og beregn nye gæt
     public void resetAndCalculate(){
         this.moves.clear();
         this.currentGuessCounter = 0;
+        this.lowAngle = 1;
         this.calulateMoves();
     }
 
@@ -99,29 +108,33 @@ public class Computer{
         double a = Math.toRadians(angleInDegrees);
         double dx = Math.abs(target.getX() - shooter.getX());
         dy = shooter.getY() - target.getY();
+
         double udtryk = 2*(dx*Math.pow(Math.sin(a),3)-dy*Math.pow(Math.cos(a),3)-dx*Math.sin(a));
-        double v0 = Math.abs((Math.sqrt(-udtryk*Math.cos(a)*g)*dx/udtryk));
+        double v0 = Math.abs((Math.sqrt(Math.abs(-udtryk*Math.cos(a)*g))*dx/udtryk));
         correct = new Guess(angleInDegrees, v0);
 
         //skaler antallet af muligheder med sværhedsgraden
-        int totalAngles = 15 - 2 * this.difficulty;
-        int totalVelocity = 15 - 2 * this.difficulty;
+        int totalAngles = 17 - 3 * this.difficulty;
+        int totalVelocity = 17 - 3 * this.difficulty;
 
         //sæt øvre og nedre grænse for vinkel
         int angleLower, angleUpper;
-        double velcocityLower, velocityUpper;
+
         int tal = random.nextInt(totalAngles);
-        angleLower = correct.getAngle() - tal;
-        angleUpper = correct.getAngle() + totalAngles - tal;
-        if (angleLower < this.lowAngle) {
-            angleUpper += Math.abs(angleLower) + 1;
-            angleLower = this.lowAngle;
+        angleUpper = correct.getAngle() + tal;
+        angleLower = correct.getAngle() + tal - totalAngles;
+
+        if (angleUpper > highestAngle){
+            angleLower += highestAngle - angleUpper;
+            angleUpper = highestAngle;
         }
 
         //sæt øvre og nedre grænse for hastighed
+        double velcocityLower, velocityUpper;
         tal = random.nextInt(totalVelocity);
         velcocityLower = (int) (correct.getVelocity() - tal);
         velocityUpper = (int) (correct.getVelocity() + totalVelocity - tal);
+
         if (velcocityLower < 1) {
             velocityUpper += Math.abs(velcocityLower) + 1;
             velcocityLower = 1;
@@ -165,6 +178,7 @@ public class Computer{
             //tilføj en til antal gæt
             currentGuess++;
         }
+        this.moves.add(correct);
     }
 
     //retunerer true hvis en spiller er ramt
@@ -175,6 +189,6 @@ public class Computer{
         int x = (int) (this.target.getX() - this.shooter.getX());
         int y = (int) (-g/(2*v0*v0*Math.cos(a)*Math.cos(a))*x*x+Math.tan(a)*x);
         double l = Math.sqrt(y*y) - Math.abs(dy);
-        return l <= 12;
+        return l <= 12; // true når bananen er indenfor 12 pixels af modspilleren
     }
 }
