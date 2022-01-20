@@ -310,9 +310,6 @@ public class GameController implements Initializable {
     //Anders
     //Til kast knappen
     public void kast() throws IOException, InterruptedException {
-        //Skriver navnet i spil-vinduet
-        namePlayer1.setText(player1.getName());
-        namePlayer2.setText(player2.getName());
         try {
             double numangle, numvelocity;
             //Tjekker tur på samme måde som i 'onMouseClick()'
