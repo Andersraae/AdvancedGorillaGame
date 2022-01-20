@@ -42,7 +42,7 @@ public class GameController implements Initializable {
     public static Player player1 = new Player(0, 0, StartController.namePlayer1);
     public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
     public static double g = StartController.gravity;
-    public static final boolean manuelKast = StartController.manuelKast;
+    public static boolean manuelKast;
 
     //AI
     public Computer computer1, computer2;
@@ -117,6 +117,9 @@ public class GameController implements Initializable {
         //navne
         namePlayer1.setText(player1.getName());
         namePlayer2.setText(player2.getName());
+
+        //manuel kast
+        manuelKast = StartController.manuelKast;
 
         //vind og terræn
         updateWind();
