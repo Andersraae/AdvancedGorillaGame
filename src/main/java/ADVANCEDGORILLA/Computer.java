@@ -75,14 +75,23 @@ public class Computer{
     //computer har brugt alle sine gæt og laver nye gæt
     //kaldes når computeren rammer en bygning med sit sidste gæt
     public void calculateBetterMoves(){
-        this.lowAngle = 45; // højere vinkel gør det mindre sandsynligt at ramme en bygning
-        this.resetAndCalculate();
+
+        this.lowAngle += 20; // højere vinkel gør det mindre sandsynligt at ramme en bygning
+
+        if (this.lowAngle > 80){
+            this.lowAngle = 80;
+        }
+
+        this.moves.clear();
+        this.currentGuessCounter = 0;
+        this.calulateMoves();
     }
 
     //tøm tidligere liste og nulstil antallet af gæt og beregn nye gæt
     public void resetAndCalculate(){
         this.moves.clear();
         this.currentGuessCounter = 0;
+        this.lowAngle = 1;
         this.calulateMoves();
     }
 
@@ -99,29 +108,33 @@ public class Computer{
         double a = Math.toRadians(angleInDegrees);
         double dx = Math.abs(target.getX() - shooter.getX());
         dy = shooter.getY() - target.getY();
+
         double udtryk = 2*(dx*Math.pow(Math.sin(a),3)-dy*Math.pow(Math.cos(a),3)-dx*Math.sin(a));
-        double v0 = Math.abs((Math.sqrt(-udtryk*Math.cos(a)*g)*dx/udtryk));
+        double v0 = Math.abs((Math.sqrt(Math.abs(-udtryk*Math.cos(a)*g))*dx/udtryk));
         correct = new Guess(angleInDegrees, v0);
 
         //skaler antallet af muligheder med sværhedsgraden
-        int totalAngles = 15 - 2 * this.difficulty;
-        int totalVelocity = 15 - 2 * this.difficulty;
+        int totalAngles = 17 - 3 * this.difficulty;
+        int totalVelocity = 17 - 3 * this.difficulty;
 
         //sæt øvre og nedre grænse for vinkel
         int angleLower, angleUpper;
-        double velcocityLower, velocityUpper;
+
         int tal = random.nextInt(totalAngles);
-        angleLower = correct.getAngle() - tal;
-        angleUpper = correct.getAngle() + totalAngles - tal;
-        if (angleLower < this.lowAngle) {
-            angleUpper += Math.abs(angleLower) + 1;
-            angleLower = this.lowAngle;
+        angleUpper = correct.getAngle() + tal;
+        angleLower = correct.getAngle() + tal - totalAngles;
+
+        if (angleUpper > highestAngle){
+            angleLower += highestAngle - angleUpper;
+            angleUpper = highestAngle;
         }
 
         //sæt øvre og nedre grænse for hastighed
+        double velcocityLower, velocityUpper;
         tal = random.nextInt(totalVelocity);
         velcocityLower = (int) (correct.getVelocity() - tal);
         velocityUpper = (int) (correct.getVelocity() + totalVelocity - tal);
+
         if (velcocityLower < 1) {
             velocityUpper += Math.abs(velcocityLower) + 1;
             velcocityLower = 1;
@@ -165,6 +178,7 @@ public class Computer{
             //tilføj en til antal gæt
             currentGuess++;
         }
+        this.moves.add(correct);
     }
 
     //retunerer true hvis en spiller er ramt
