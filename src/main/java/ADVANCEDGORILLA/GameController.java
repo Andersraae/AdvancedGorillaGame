@@ -33,15 +33,14 @@ public class GameController implements Initializable {
 
     //Variable der ikke skal ændres
     public static int CANVAS_X,CANVAS_Y;
-    public static Projectile proj = new Projectile(0,0);
-    public static Player winner = new Player(-1,-1,"null");
-    public static boolean winnerFound = false, player1HasTurn = true;
+    public static Projectile proj;
+    public static Player winner;
+    public static boolean winnerFound,player1HasTurn;
 
     //Variable fra startScreen
-    public static int FirstTo = StartController.PlayingTo;
-    public static Player player1 = new Player(0, 0, StartController.namePlayer1);
-    public static Player player2 = new Player(CANVAS_X - 1, 0, StartController.namePlayer2);
-    public static double g = StartController.gravity;
+    public static int FirstTo;
+    public static Player player1, player2;
+    public static double g;
     public static boolean manuelKast;
 
     //AI
@@ -120,6 +119,9 @@ public class GameController implements Initializable {
 
         //manuel kast
         manuelKast = StartController.manuelKast;
+
+        //tyngdekraft
+         g = StartController.gravity;
 
         //vind og terræn
         updateWind();
